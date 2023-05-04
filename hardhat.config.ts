@@ -22,6 +22,7 @@ const compilers = [
 ];
 
 module.exports = {
+
 	zksolc: {
 		version: '1.3.9',
 		compilerSource: 'binary',
