@@ -70,7 +70,14 @@ export async function getApprovalBasedPaymasterData(
 	const eth_fee = BigNumber.from(
 		1000000 * Number(await provider.getGasPrice())
 	);
+
 	const token_fee = BigNumber.from(Number(eth_fee || BigNumber.from(0)) * 1.5);
+
+	console.log(
+		'Token Fees',
+		ethers.utils.formatEther(eth_fee),
+		ethers.utils.formatEther(token_fee)
+	);
 
 	const paymasterParams = utils.getPaymasterParams(paymasterAddress, {
 		type: 'ApprovalBased',

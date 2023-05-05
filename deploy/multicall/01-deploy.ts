@@ -20,6 +20,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	const erc20 = await deployer.deploy(erc20Artifact, []);
 	console.log(`erc20: "${erc20.address}",`);
 
+	// Deploying USDC token
+	const usdcArtifact = await deployer.loadArtifact('USDC');
+	const usdc = await deployer.deploy(usdcArtifact, []);
+	console.log(`usdc: "${usdc.address}",`);
+
 	// Deploy Spender (contract that transfers from ERC20 to it self)
 	const spenderArtifact = await deployer.loadArtifact('Spender');
 	const Spender = await deployer.deploy(spenderArtifact);
@@ -41,7 +46,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	// Deploying the paymaster
 	const paymasterArtifact = await deployer.loadArtifact('Paymaster');
-	const paymaster = await deployer.deploy(paymasterArtifact, []);
+	const paymaster = await deployer.deploy(paymasterArtifact, [usdc.address]);
 	console.log(`paymaster: "${paymaster.address}",`);
 
 	// Supplying paymaster with ETH
@@ -70,8 +75,13 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	console.log(`account: "${accountContract.address}",`);
 
-	(await erc20.mint(wallet.address, ethers.utils.parseEther('3000'))).wait();
-	console.log('Minted 3000 tokens for the empty wallet');
+	// (await erc20.mint(wallet.address, ethers.utils.parseEther('3000'))).wait();
+	// console.log('Minted 3000 tokens for the empty wallet');
+
+	(
+		await usdc.mint(accountContract.address, ethers.utils.parseEther('3000'))
+	).wait();
+	console.log('Minted 3000 USDC tokens for the empty wallet');
 
 	(
 		await erc20.mint(accountContract.address, ethers.utils.parseEther('1000'))

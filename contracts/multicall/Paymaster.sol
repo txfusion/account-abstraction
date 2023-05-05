@@ -8,6 +8,12 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Paymaster is IPaymaster {
+    address public sponsoredToken;
+
+    constructor(address _sponsoredToken) {
+        sponsoredToken = _sponsoredToken;
+    }
+
     modifier onlyBootloader() {
         require(
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
@@ -42,6 +48,40 @@ contract Paymaster is IPaymaster {
             (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
                 value: requiredETH
             }("");
+
+            require(success, "Failed to transfer funds to the bootloader");
+        } else if (
+            paymasterInputSelector == IPaymasterFlow.approvalBased.selector
+        ) {
+            (address token, , ) = abi.decode(
+                _transaction.paymasterInput[4:],
+                (address, uint, bytes)
+            );
+            address user = address(uint160(_transaction.from));
+            require(address(token) == address(sponsoredToken), "Invalid Token");
+
+            // conversion ratio 1:1
+            uint requiredTokenAmount = _transaction.gasLimit *
+                _transaction.maxFeePerGas;
+
+            uint balanceBefore = IERC20(sponsoredToken).balanceOf(
+                address(this)
+            );
+            IERC20(sponsoredToken).transferFrom(
+                user,
+                address(this),
+                requiredTokenAmount
+            );
+            require(
+                IERC20(sponsoredToken).balanceOf(address(this)) >=
+                    requiredTokenAmount + balanceBefore,
+                "Insufficient Token received"
+            );
+
+            (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
+                value: requiredTokenAmount
+            }("");
+
             require(success, "Failed to transfer funds to the bootloader");
         } else {
             revert("Unsupported paymaster flow");

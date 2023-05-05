@@ -7,6 +7,7 @@ import { ethers } from 'ethers';
 import {
 	addSignature,
 	constructBatchedCalldata,
+	getApprovalBasedPaymasterData,
 	getEIP712TxRequest,
 } from '../utils/multicall';
 
@@ -21,24 +22,27 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	const erc20 = await deployer.loadArtifact('MyERC20');
 	const erc20Contract = new Contract(address.erc20, erc20.abi, wallet);
 
+	// USDC Token
+	const usdc = await deployer.loadArtifact('MyERC20');
+	const usdcContract = new Contract(address.usdc, usdc.abi, wallet);
+
 	// Account token balance
 	const erc20AccountBalance = await erc20Contract.balanceOf(address.account);
 	console.log(
 		'Account token balance before batch transaction',
 		ethers.utils.formatEther(erc20AccountBalance)
 	);
-
-	// Target token balance
-	const erc20TargetBalance = await erc20Contract.balanceOf(address.spender);
+	// Usdc token balance
+	const usdcAccountBalance = await usdcContract.balanceOf(address.account);
 	console.log(
-		'Target address token balance before batch transaction',
-		ethers.utils.formatEther(erc20TargetBalance)
+		'USDC token balance before batch transaction',
+		ethers.utils.formatEther(usdcAccountBalance)
 	);
 
 	console.log('=============================================');
 
 	let transactionList: any[] = [];
-	for (let i = 0; i < 101; i++) {
+	for (let i = 0; i < 2; i++) {
 		transactionList[i] = await erc20Contract.populateTransaction.transfer(
 			address.spender,
 			AMOUNT
@@ -51,13 +55,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('TXs batched');
 
 	// paymaster data
-	const paymasterData: types.Eip712Meta = {
-		gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-		paymasterParams: utils.getPaymasterParams(address.paymaster, {
-			type: 'General',
-			innerInput: new Uint8Array(),
-		}),
-	};
+	const paymasterData: types.Eip712Meta = await getApprovalBasedPaymasterData(
+		provider,
+		address.usdc,
+		address.paymaster
+	);
 
 	console.log('Paymaster data obtained');
 
@@ -86,12 +88,12 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		ethers.utils.formatEther(erc20AccountBalanceAfter)
 	);
 
-	// Target token balance
-	const erc20TargetBalanceAfterTxs = await erc20Contract.balanceOf(
-		address.spender
+	// Usdc token balance
+	const usdcAccountBalanceAfterTx = await usdcContract.balanceOf(
+		address.account
 	);
 	console.log(
-		'Target address token balance before batch transaction',
-		ethers.utils.formatEther(erc20TargetBalanceAfterTxs)
+		'USDC token balance before batch transaction',
+		ethers.utils.formatEther(usdcAccountBalanceAfterTx)
 	);
 }
