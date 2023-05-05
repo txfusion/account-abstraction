@@ -42,7 +42,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('=============================================');
 
 	let transactionList: any[] = [];
-	for (let i = 0; i < 2; i++) {
+	for (let i = 0; i < 80; i++) {
 		transactionList[i] = await erc20Contract.populateTransaction.transfer(
 			address.spender,
 			AMOUNT

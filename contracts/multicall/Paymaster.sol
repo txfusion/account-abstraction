@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract Paymaster is IPaymaster {
     address public sponsoredToken;
 
+    uint256 constant PRICE_FOR_PAYING_FEES = 1;
+
     constructor(address _sponsoredToken) {
         sponsoredToken = _sponsoredToken;
     }
@@ -53,36 +55,57 @@ contract Paymaster is IPaymaster {
         } else if (
             paymasterInputSelector == IPaymasterFlow.approvalBased.selector
         ) {
-            (address token, , ) = abi.decode(
+            // While the transaction data consists of address, uint256 and bytes data,
+            // the data is not needed for this paymaster
+            (address token, uint256 amount, bytes memory data) = abi.decode(
                 _transaction.paymasterInput[4:],
-                (address, uint, bytes)
+                (address, uint256, bytes)
             );
-            address user = address(uint160(_transaction.from));
-            require(address(token) == address(sponsoredToken), "Invalid Token");
 
-            // conversion ratio 1:1
-            uint requiredTokenAmount = _transaction.gasLimit *
-                _transaction.maxFeePerGas;
+            // Verify if token is the correct one
+            require(token == sponsoredToken, "Invalid token");
 
-            uint balanceBefore = IERC20(sponsoredToken).balanceOf(
-                address(this)
-            );
-            IERC20(sponsoredToken).transferFrom(
-                user,
-                address(this),
-                requiredTokenAmount
+            // We verify that the user has provided enough allowance
+            address userAddress = address(uint160(_transaction.from));
+
+            address thisAddress = address(this);
+
+            uint256 providedAllowance = IERC20(token).allowance(
+                userAddress,
+                thisAddress
             );
             require(
-                IERC20(sponsoredToken).balanceOf(address(this)) >=
-                    requiredTokenAmount + balanceBefore,
-                "Insufficient Token received"
+                providedAllowance >= PRICE_FOR_PAYING_FEES,
+                "Min allowance too low"
             );
 
-            (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
-                value: requiredTokenAmount
-            }("");
+            // Note, that while the minimal amount of ETH needed is tx.gasPrice * tx.gasLimit,
+            // neither paymaster nor account are allowed to access this context variable.
+            uint256 requiredETH = _transaction.gasLimit *
+                _transaction.maxFeePerGas;
 
-            require(success, "Failed to transfer funds to the bootloader");
+            try
+                IERC20(token).transferFrom(userAddress, thisAddress, amount)
+            {} catch (bytes memory revertReason) {
+                // If the revert reason is empty or represented by just a function selector,
+                // we replace the error with a more user-friendly message
+                if (revertReason.length <= 4) {
+                    revert("Failed to transferFrom from users' account");
+                } else {
+                    assembly {
+                        revert(add(0x20, revertReason), mload(revertReason))
+                    }
+                }
+            }
+
+            // The bootloader never returns any data, so it can safely be ignored here.
+            (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
+                value: requiredETH
+            }("");
+            require(
+                success,
+                "Failed to transfer tx fee to the bootloader. Paymaster balance might not be enough."
+            );
         } else {
             revert("Unsupported paymaster flow");
         }
