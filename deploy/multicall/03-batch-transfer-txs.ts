@@ -10,7 +10,7 @@ import {
 	getEIP712TxRequest,
 } from '../utils/multicall';
 
-const AMOUNT = ethers.utils.parseEther('1');
+const AMOUNT = ethers.utils.parseEther('0.1');
 
 export default async function (hre: HardhatRuntimeEnvironment) {
 	const provider = new Provider('http://localhost:3050', 270);
@@ -21,35 +21,32 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	const erc20 = await deployer.loadArtifact('MyERC20');
 	const erc20Contract = new Contract(address.erc20, erc20.abi, wallet);
 
+	// Account token balance
 	const erc20AccountBalance = await erc20Contract.balanceOf(address.account);
 	console.log(
 		'Account token balance before batch transaction',
 		ethers.utils.formatEther(erc20AccountBalance)
 	);
 
-	// First TX
-	const transferTxFirst = await erc20Contract.populateTransaction.transfer(
-		address.spender,
-		AMOUNT
+	// Target token balance
+	const erc20TargetBalance = await erc20Contract.balanceOf(address.spender);
+	console.log(
+		'Target address token balance before batch transaction',
+		ethers.utils.formatEther(erc20TargetBalance)
 	);
 
-	// SecondTx
-	const transferTxSecond = await erc20Contract.populateTransaction.transfer(
-		address.spender,
-		AMOUNT
-	);
-	// ThirdTx
-	const transferTxThird = await erc20Contract.populateTransaction.transfer(
-		address.spender,
-		AMOUNT
-	);
+	console.log('=============================================');
+
+	let transactionList: any[] = [];
+	for (let i = 0; i < 101; i++) {
+		transactionList[i] = await erc20Contract.populateTransaction.transfer(
+			address.spender,
+			AMOUNT
+		);
+	}
 
 	// concatenate multiple txs
-	const multiTx = await constructBatchedCalldata([
-		transferTxFirst,
-		transferTxSecond,
-		transferTxThird,
-	]);
+	const multiTx = await constructBatchedCalldata([...transactionList]);
 
 	console.log('TXs batched');
 
@@ -78,11 +75,23 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	const txWait = await status.wait();
 	console.log('Status', txWait.status);
 
+	console.log('=============================================');
+
+	// Account token balance
 	const erc20AccountBalanceAfter = await erc20Contract.balanceOf(
 		address.account
 	);
 	console.log(
 		'Account token balance after batch transaction',
 		ethers.utils.formatEther(erc20AccountBalanceAfter)
+	);
+
+	// Target token balance
+	const erc20TargetBalanceAfterTxs = await erc20Contract.balanceOf(
+		address.spender
+	);
+	console.log(
+		'Target address token balance before batch transaction',
+		ethers.utils.formatEther(erc20TargetBalanceAfterTxs)
 	);
 }

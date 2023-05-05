@@ -30,10 +30,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	const accountArtifact = await deployer.loadArtifact('Account');
 	const bytecodeHash = utils.hashBytecode(accountArtifact.bytecode);
 
-	const factory = <ethers.Contract>(
-		await deployer.deploy(factoryArtifact, [bytecodeHash], undefined, [
-			accountArtifact.bytecode,
-		])
+	const factory = await deployer.deploy(
+		factoryArtifact,
+		[bytecodeHash],
+		undefined,
+		[accountArtifact.bytecode]
 	);
 
 	console.log(`factory: "${factory.address}",`);
@@ -66,15 +67,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		accountArtifact.abi,
 		wallet
 	);
+
 	console.log(`account: "${accountContract.address}",`);
 
 	(await erc20.mint(wallet.address, ethers.utils.parseEther('3000'))).wait();
-	console.log('Minted 30 tokens for the empty wallet');
+	console.log('Minted 3000 tokens for the empty wallet');
 
 	(
 		await erc20.mint(accountContract.address, ethers.utils.parseEther('1000'))
 	).wait();
-	console.log('Minted tokens for the deployed Account');
+	console.log('Minted 1000 tokens for the deployed Account');
 
 	console.log(`Deployment completed!`);
 }

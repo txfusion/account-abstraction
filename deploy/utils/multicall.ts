@@ -171,10 +171,6 @@ export async function addSignature(tx: any, signer: Wallet): Promise<any> {
 		ethers.utils.joinSignature(signer._signingKey().signDigest(signedTxHash))
 	);
 
-	// old way of signing tx
-	// const signature = ethers.utils.arrayify(
-	// 	ethers.utils.joinSignature(await signer.eip712.sign(tx))
-	// );
 	tx.customData = {
 		...tx.customData,
 		customSignature: signature,

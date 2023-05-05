@@ -24,9 +24,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	// Spender Contract
 	const spenderArtifact = await deployer.loadArtifact('Spender');
-	const spender = <Contract>(
-		new Contract(address.spender, spenderArtifact.abi, wallet)
-	);
+	const spender = new Contract(address.spender, spenderArtifact.abi, wallet);
 
 	// TODO: CHECK IF SPENDER IS APPROVED TO SPEND REQUIRED AMOUNT OF ERC20
 
@@ -34,6 +32,12 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log(
 		'Account token balance before batch transaction',
 		ethers.utils.formatEther(erc20AccountBalance)
+	);
+
+	const erc20SpenderBalance = await erc20Contract.balanceOf(address.spender);
+	console.log(
+		'Spender token balance before batch transaction',
+		ethers.utils.formatEther(erc20SpenderBalance)
 	);
 
 	const erc20SpenderAllowance = await erc20Contract.allowance(
@@ -46,6 +50,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		ethers.utils.formatEther(erc20SpenderAllowance)
 	);
 
+	console.log('=============================================');
+
 	// 1. TX - Approve for (the) Spender to spend certain amount of tokens on the behalf of account
 	const approveErc20Tx = await erc20Contract.populateTransaction.approve(
 		address.spender,
@@ -53,7 +59,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	);
 
 	console.log(
-		'Create 1. TX - Approve for (the) Spender to spend certain amount of tokens on the behalf of account'
+		'Create Approve Tx for (the) Spender to spend certain amount of tokens on the behalf of account'
 	);
 
 	// 2. TX - Deposit (transferFrom) ERC20 Token from account to the Spender address
@@ -63,7 +69,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	);
 
 	console.log(
-		'Create 2. TX - Deposit (transferFrom) ERC20 Token from account to the Spender address'
+		'Create Deposit Tx (transferFrom) ERC20 Token from account to the Spender address'
 	);
 
 	// concatenate multiple txs
@@ -72,7 +78,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('TXs batched');
 
 	// paymaster data
-	const paymasterD: types.Eip712Meta = {
+	const paymasterData: types.Eip712Meta = {
 		gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
 		paymasterParams: utils.getPaymasterParams(address.paymaster, {
 			type: 'General',
@@ -80,37 +86,45 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		}),
 	};
 
-	console.log('Paymaster data obtained');
+	console.log('General Flow Paymaster data obtained');
 
 	let tx: types.TransactionRequest = await getEIP712TxRequest(
 		provider,
 		address.account,
 		address.account,
 		multiTx,
-		paymasterD
+		paymasterData
 	);
 
 	tx = await addSignature(tx, wallet);
 
 	const status = await provider.sendTransaction(utils.serialize(tx));
 	const txWait = await status.wait();
+
 	console.log('Status', txWait.status);
+	console.log('=============================================');
 
 	const erc20AccountBalanceAfter = await erc20Contract.balanceOf(
 		address.account
 	);
 	console.log(
-		'Account token balance before batch transaction',
+		'Account token balance after batch transaction',
 		ethers.utils.formatEther(erc20AccountBalanceAfter)
 	);
 
+	const erc20SpenderBalanceAfterTx = await erc20Contract.balanceOf(
+		address.spender
+	);
+	console.log(
+		'Spender token balance after batch transaction',
+		ethers.utils.formatEther(erc20SpenderBalanceAfterTx)
+	);
 	const erc20SpenderAllowanceAfterTx = await erc20Contract.allowance(
 		address.account,
 		address.spender
 	);
-
 	console.log(
-		'Spender allowance before after: ',
+		'Spender allowance after transactions: ',
 		ethers.utils.formatEther(erc20SpenderAllowanceAfterTx)
 	);
 }
