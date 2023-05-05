@@ -11,6 +11,7 @@ import {
 } from '../utils/multicall';
 
 const AMOUNT = ethers.utils.parseEther('10');
+const ALLOWANCE_AMOUNT = ethers.utils.parseEther('100');
 
 export default async function (hre: HardhatRuntimeEnvironment) {
 	const provider = new Provider('http://localhost:3050', 270);
@@ -27,11 +28,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		new Contract(address.spender, spenderArtifact.abi, wallet)
 	);
 
-	// TODO: CHECK IF SPENDER IS APPROVED TO SPEND ERC20
-	const erc20SpenderAllowance = await erc20Contract.allowance(
-		address.account,
-		address.spender
-	);
+	// TODO: CHECK IF SPENDER IS APPROVED TO SPEND REQUIRED AMOUNT OF ERC20
 
 	const erc20AccountBalance = await erc20Contract.balanceOf(address.account);
 	console.log(
@@ -39,18 +36,21 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		ethers.utils.formatEther(erc20AccountBalance)
 	);
 
-	console.log('erc20SpenderAllowance', erc20SpenderAllowance.toString());
+	const erc20SpenderAllowance = await erc20Contract.allowance(
+		address.account,
+		address.spender
+	);
+
+	console.log(
+		'Spender allowance before transfer: ',
+		ethers.utils.formatEther(erc20SpenderAllowance)
+	);
 
 	// 1. TX - Approve for (the) Spender to spend certain amount of tokens on the behalf of account
 	const approveErc20Tx = await erc20Contract.populateTransaction.approve(
 		address.spender,
-		AMOUNT
+		ALLOWANCE_AMOUNT
 	);
-
-	const customApproveTx = {
-		...approveErc20Tx,
-		from: address.account,
-	};
 
 	console.log(
 		'Create 1. TX - Approve for (the) Spender to spend certain amount of tokens on the behalf of account'
@@ -102,5 +102,15 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log(
 		'Account token balance before batch transaction',
 		ethers.utils.formatEther(erc20AccountBalanceAfter)
+	);
+
+	const erc20SpenderAllowanceAfterTx = await erc20Contract.allowance(
+		address.account,
+		address.spender
+	);
+
+	console.log(
+		'Spender allowance before after: ',
+		ethers.utils.formatEther(erc20SpenderAllowanceAfterTx)
 	);
 }

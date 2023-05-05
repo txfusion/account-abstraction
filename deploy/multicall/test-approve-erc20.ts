@@ -37,12 +37,6 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		}),
 	};
 
-	// 1. TX - Approve for (the) Spender to spend certain amount of tokens on the behalf of account
-	// const approveErc20Tx = await erc20Contract.populateTransaction.approve(
-	// 	address.spender,
-	// 	AMOUNT
-	// );
-
 	const transferTX = await erc20Contract.populateTransaction.transfer(
 		address.spender,
 		AMOUNT
