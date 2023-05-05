@@ -39,6 +39,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		ethers.utils.formatEther(usdcAccountBalance)
 	);
 
+	const paymasterBalance = await provider.getBalance(address.paymaster);
+	console.log(
+		'Paymaster balance before batch transaction',
+		ethers.utils.formatEther(paymasterBalance)
+	);
 	console.log('=============================================');
 
 	let transactionList: any[] = [];
@@ -93,7 +98,12 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		address.account
 	);
 	console.log(
-		'USDC token balance before batch transaction',
+		'USDC token balance after batch transaction',
 		ethers.utils.formatEther(usdcAccountBalanceAfterTx)
+	);
+	const paymasterBalanceAfter = await provider.getBalance(address.paymaster);
+	console.log(
+		'Paymaster balance after batch transaction',
+		ethers.utils.formatEther(paymasterBalanceAfter)
 	);
 }
