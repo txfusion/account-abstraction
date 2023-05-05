@@ -7,12 +7,10 @@ import { ethers } from 'ethers';
 import {
 	addSignature,
 	constructBatchedCalldata,
-	getCustomData,
 	getEIP712TxRequest,
-	getTxWithApproval,
 } from '../utils/multicall';
 
-const AMOUNT = ethers.utils.parseEther('100');
+const AMOUNT = ethers.utils.parseEther('10');
 
 export default async function (hre: HardhatRuntimeEnvironment) {
 	const provider = new Provider('http://localhost:3050', 270);
@@ -30,10 +28,15 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	);
 
 	// TODO: CHECK IF SPENDER IS APPROVED TO SPEND ERC20
-
 	const erc20SpenderAllowance = await erc20Contract.allowance(
 		address.account,
 		address.spender
+	);
+
+	const erc20AccountBalance = await erc20Contract.balanceOf(address.account);
+	console.log(
+		'Account token balance before batch transaction',
+		ethers.utils.formatEther(erc20AccountBalance)
 	);
 
 	console.log('erc20SpenderAllowance', erc20SpenderAllowance.toString());
@@ -43,6 +46,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		address.spender,
 		AMOUNT
 	);
+
+	const customApproveTx = {
+		...approveErc20Tx,
+		from: address.account,
+	};
 
 	console.log(
 		'Create 1. TX - Approve for (the) Spender to spend certain amount of tokens on the behalf of account'
@@ -63,16 +71,6 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	console.log('TXs batched');
 
-	// calldata
-	// const callData = await getTxWithApproval(
-	// 	depositTx,
-	// 	address.erc20,
-	// 	erc20.abi,
-	// 	AMOUNT,
-	// 	wallet
-	// );
-	// console.log('GET CALLDATA ');
-
 	// paymaster data
 	const paymasterD: types.Eip712Meta = {
 		gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
@@ -84,10 +82,6 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	console.log('Paymaster data obtained');
 
-	// const customData = await getCustomData(provider, address.erc20);
-	// console.log('GET CUSTOM DATA');
-
-	//
 	let tx: types.TransactionRequest = await getEIP712TxRequest(
 		provider,
 		address.account,
@@ -96,13 +90,17 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		paymasterD
 	);
 
-	// console.log('CUSTOM TX');
-
 	tx = await addSignature(tx, wallet);
 
-	// const status = await provider.sendTransaction(utils.serialize(tx));
+	const status = await provider.sendTransaction(utils.serialize(tx));
+	const txWait = await status.wait();
+	console.log('Status', txWait.status);
 
-	// const txWait = await status.wait();
-
-	// console.log('Status', txWait);
+	const erc20AccountBalanceAfter = await erc20Contract.balanceOf(
+		address.account
+	);
+	console.log(
+		'Account token balance before batch transaction',
+		ethers.utils.formatEther(erc20AccountBalanceAfter)
+	);
 }
