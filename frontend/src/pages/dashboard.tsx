@@ -7,7 +7,8 @@ import { Box, Image, Text, Link, Container, VStack, StackDivider, useDisclosure,
 import AccountManagmentModal from "@/components/AccountManagmentModal";
 import { PurpleButton } from "@/components/buttons/PurpleButton";
 import { PurpleInput } from "@/components/inputs/PurpleInput";
-import { connectAccount, createAccount } from "@/libs/accountManagment";
+import { connectAccount, createAccount, disconectAccount } from "@/libs/accountManagment";
+import { AccountButton } from "@/components/buttons/AccountButton";
 
 
 function Dashboard() {
@@ -44,14 +45,14 @@ function Dashboard() {
         borderRadius="3xl"
       >
         <Flex m={1} mb="50">
-          {!connected ? <PurpleButton onClick={onOpen} text={"Account Managment"}></PurpleButton> : null}
+          {!connected ? <PurpleButton onClick={onOpen} text={"Account Managment"}></PurpleButton> : <AccountButton disconnect={disconectAccount} setConnected={setConnected}></AccountButton>}
         </Flex>
         <Flex w="50%" m={3}>
           <FormControl>
-            <PurpleInput placeHolder="" setValue={setAddressValue} text={"Adress Value"}></PurpleInput>
-            <PurpleInput placeHolder="" setValue={setCoinValue} text={"Coins"}></PurpleInput>
+            <PurpleInput placeHolder="0x3D...G4K3" setValue={setAddressValue} text={"Address"}></PurpleInput>
+            <PurpleInput placeHolder="1 ETH" setValue={setCoinValue} text={"Coins"}></PurpleInput>
             <Flex mt={2} mb={4}>
-              <PurpleButton onClick={null} text={"Connect"}></PurpleButton>
+              <PurpleButton onClick={null} text={"Send"}></PurpleButton>
             </Flex>
           </FormControl>
         </Flex>

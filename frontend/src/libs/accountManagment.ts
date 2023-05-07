@@ -4,11 +4,17 @@ type ConnectAccountProps = {
     adressValue: any;
   };
 
+  type DisconectAccountProps = {
+    setConnected: any;
+  };
+
 export function connectAccount({adressValue, setConnected}: ConnectAccountProps) {
-    alert("Adress is " + adressValue)
     setConnected(true)
 }
 
+export function disconectAccount({setConnected}: DisconectAccountProps) {
+    setConnected(false)
+}
+
 export function createAccount() {
-    alert("Create Account")
 }

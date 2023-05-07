@@ -27,7 +27,7 @@ const wagmiClient = createClient({
 const theme = extendTheme({
   colors: {
     'system-gray': {
-      'purple': "#623485",
+      900: "#24262A",
       100: "#2C2D31",
       500: "#989DAC"
     },
