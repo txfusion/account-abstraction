@@ -1,4 +1,5 @@
 import "@rainbow-me/rainbowkit/styles.css";
+import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { getDefaultWallets, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -23,20 +24,33 @@ const wagmiClient = createClient({
   provider
 });
 
+const theme = extendTheme({
+  colors: {
+    'system-gray': {
+      'purple': "#623485",
+      100: "#2C2D31",
+      500: "#989DAC"
+    },
+    'system-purple': {
+      500: "#623485",
+    },
+  },
+})
+
 
 function App({ Component, pageProps }) {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} theme={darkTheme({
-      accentColor: '#623485',
-      accentColorForeground: 'white',
-      borderRadius: 'large',
-      fontStack: 'system',  
-    })} modalSize="compact" coolMode={true}>
-        <NavBar/>
-        <Component {...pageProps} />
+        accentColor: '#623485',
+        accentColorForeground: 'white',
+        borderRadius: 'large',
+      })} modalSize="compact" coolMode={true}>
+        <ChakraProvider theme={theme}>
+          <NavBar />
+          <Component {...pageProps} />
+        </ChakraProvider>
       </RainbowKitProvider>
-
     </WagmiConfig>
   );
 }
