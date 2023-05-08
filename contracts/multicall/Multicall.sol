@@ -5,12 +5,11 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/openzeppelin/utils/Addr
 
 /**
 @title Multicall Contract that allows Account to execute delegatecall 
-@author Porco Rosso<porcorossoj89@gmail.com>
 
 @dev How to call multicall: 
-Transaction that intends to perform multicall configrues the transaction struct like the following...
+Transaction that intends to perform multicall configures the transaction struct like the following...
 - sets callee as account address itself.
-- put BATCH_TX_SELECTOR which is 0x29451959 into the first 4bytes of tx calldata ( or tx selector or msg.sig, you name it! )
+- put BATCH_TX_SELECTOR which is 0x29451959 into the first 4 bytes of tx calldata
 - concat the bytes4 value with an batched and encoded calldata like the ts script below
 
     const isDelegatecalls[]   // contain boolean value about whether it is delegatecall or not
@@ -49,7 +48,7 @@ contract Multicall {
     @dev _data == _transaction.data[4:] which removes the first 4 bytes from the _transaction.data
     @dev this function can perform both basic call and delegatecall in the same batch transaction 
          because of provided boolean valu e`isDelegatecall`
-     */
+    */
     function multicall(bytes memory _data) public {
         (
             bool[] memory isDelegatecall,

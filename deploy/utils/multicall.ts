@@ -67,6 +67,8 @@ export async function getApprovalBasedPaymasterData(
 	const abiCoder = new ethers.utils.AbiCoder();
 	const input = abiCoder.encode([], []);
 
+	// TODO: Estimate gas fee for the transaction
+
 	const eth_fee = BigNumber.from(
 		1000000 * Number(await provider.getGasPrice())
 	);

@@ -6,9 +6,7 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContrac
 
 /**
 @title Factory Contract that deploys Account contract
-@author Porco Rosso<porcorossoj89@gmail.com>
 @notice This is a factory contract that deploys Account contract, which also passes deployed addresses to AccountRegistry contract.
-
 */
 
 contract AccountFactory {
@@ -20,7 +18,7 @@ contract AccountFactory {
 
     /**
     @notice this function deploys an Account contract and passes deployed address to AccountRegistry.
-    @param salt arbitrary hash to pass create2Account metho
+    @param salt arbitrary hash to pass to create2Account method
     @param owner signer address of the deployed account
     @return accountAddress deployed Account contract address
      */

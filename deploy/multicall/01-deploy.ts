@@ -1,38 +1,65 @@
-import { Provider, utils, Wallet, Contract } from 'zksync-web3';
 import * as ethers from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { utils, Wallet, Contract } from 'zksync-web3';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
 import { rich_wallet } from '../utils/rich_wallet';
 
-export const GASLIMIT = {
+const MINT_AMOUNT = ethers.utils.parseEther('1000');
+const GAS_LIMIT = {
 	gasLimit: ethers.utils.hexlify(1000000),
 };
 
-export default async function (hre: HardhatRuntimeEnvironment) {
-	const provider = new Provider('http://localhost:3050', 270);
-
-	// Get wallet
-	const wallet = new Wallet(rich_wallet[0].privateKey, provider);
+export default async function(hre: HardhatRuntimeEnvironment) {
+	const wallet = new Wallet(rich_wallet[0].privateKey);
 	const deployer = new Deployer(hre, wallet);
 
-	// Deploying ERC20 token
-	const erc20Artifact = await deployer.loadArtifact('MyERC20');
-	const erc20 = await deployer.deploy(erc20Artifact, []);
-	console.log(`erc20: "${erc20.address}",`);
+	const erc20 = await deployContract(deployer, 'MyERC20', [18]);
+	const usdc = await deployContract(deployer, 'USDC');
+	await deployContract(deployer, 'Spender');
+	const paymaster = await deployContract(deployer, 'Paymaster', [usdc.address]);
+	
+	// Supplying paymaster with ETH
+	await (
+		await deployer.zkWallet.sendTransaction({
+			to: paymaster.address,
+			value: ethers.utils.parseEther('100'),
+		})
+	).wait();
+		
+	const accountContract = await deployAccount(deployer, 'AccountFactory', 'Account');
 
-	// Deploying USDC token
-	const usdcArtifact = await deployer.loadArtifact('USDC');
-	const usdc = await deployer.deploy(usdcArtifact, []);
-	console.log(`usdc: "${usdc.address}",`);
+	(await erc20.mint(wallet.address, MINT_AMOUNT)).wait();
+	console.log(`Minted ${MINT_AMOUNT} tokens for the empty wallet`);
 
-	// Deploy Spender (contract that transfers from ERC20 to it self)
-	const spenderArtifact = await deployer.loadArtifact('Spender');
-	const Spender = await deployer.deploy(spenderArtifact);
-	console.log(`spender: "${Spender.address}",`);
+	(await usdc.mint(accountContract.address, MINT_AMOUNT)).wait();
+	console.log(`Minted ${MINT_AMOUNT} USDC tokens for the empty wallet`);
 
-	// Deploy AccountFactory
-	const factoryArtifact = await deployer.loadArtifact('AccountFactory');
-	const accountArtifact = await deployer.loadArtifact('Account');
+	(await erc20.mint(accountContract.address, MINT_AMOUNT)).wait();
+	console.log(`Minted ${MINT_AMOUNT} tokens for the deployed Account`);
+
+	console.log(`Deployment completed!`);
+}
+
+async function deployContract(
+	deployer: Deployer,
+	contractName: string,
+	constructorArguments: any[] = []
+): Promise<Contract> {
+	const artifact = await deployer.loadArtifact(contractName);
+	const contract = await deployer.deploy(artifact, constructorArguments);
+
+	console.log(`${contractName.toLocaleLowerCase()}: "${contract.address}",`);
+
+	return contract;
+}
+
+async function deployAccount(
+	deployer: Deployer,
+	factoryContractName: string,
+	accountContractName: string
+): Promise<Contract> {
+	const factoryArtifact = await deployer.loadArtifact(factoryContractName);
+	const accountArtifact = await deployer.loadArtifact(accountContractName);
 	const bytecodeHash = utils.hashBytecode(accountArtifact.bytecode);
 
 	const factory = await deployer.deploy(
@@ -42,51 +69,21 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		[accountArtifact.bytecode]
 	);
 
-	console.log(`factory: "${factory.address}",`);
+	console.log(`${factoryContractName.toLocaleLowerCase()}: "${factory.address}",`);
 
-	// Deploying the paymaster
-	const paymasterArtifact = await deployer.loadArtifact('Paymaster');
-	const paymaster = await deployer.deploy(paymasterArtifact, [usdc.address]);
-	console.log(`paymaster: "${paymaster.address}",`);
-
-	// Supplying paymaster with ETH
-	await (
-		await deployer.zkWallet.sendTransaction({
-			to: paymaster.address,
-			value: ethers.utils.parseEther('100'),
-		})
-	).wait();
-
-	// Deploy account
 	const salt = ethers.constants.HashZero;
 	const transaction = await (
-		await factory.deployAccount(salt, wallet.address, GASLIMIT)
+		await factory.deployAccount(salt, deployer.zkWallet.address, GAS_LIMIT)
 	).wait();
 
-	// Get account address
-	const accountAddr =
-		utils.getDeployedContracts(transaction)[0].deployedAddress;
-
-	const accountContract = new ethers.Contract(
+	const accountAddr = utils.getDeployedContracts(transaction)[0].deployedAddress;
+	const accountContract = new Contract(
 		accountAddr,
 		accountArtifact.abi,
-		wallet
+		deployer.zkWallet
 	);
 
-	console.log(`account: "${accountContract.address}",`);
+	console.log(`${accountContractName.toLocaleLowerCase()}: "${accountContract.address}",`);
 
-	// (await erc20.mint(wallet.address, ethers.utils.parseEther('3000'))).wait();
-	// console.log('Minted 3000 tokens for the empty wallet');
-
-	(
-		await usdc.mint(accountContract.address, ethers.utils.parseEther('3000'))
-	).wait();
-	console.log('Minted 3000 USDC tokens for the empty wallet');
-
-	(
-		await erc20.mint(accountContract.address, ethers.utils.parseEther('1000'))
-	).wait();
-	console.log('Minted 1000 tokens for the deployed Account');
-
-	console.log(`Deployment completed!`);
+	return accountContract;
 }

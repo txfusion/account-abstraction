@@ -20,7 +20,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	// ERC20 Token
 	const erc20 = await deployer.loadArtifact('MyERC20');
-	const erc20Contract = new Contract(address.erc20, erc20.abi, wallet);
+	const erc20Contract = new Contract(address.myerc20, erc20.abi, wallet);
 
 	// USDC Token
 	const usdc = await deployer.loadArtifact('MyERC20');

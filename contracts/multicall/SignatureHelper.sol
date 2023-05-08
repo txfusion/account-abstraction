@@ -38,6 +38,10 @@ library SignatureHelper {
         bytes32 r;
         bytes32 s;
 
+        // Signature loading code
+		// we jump 32 (0x20) as the first slot of bytes contains the length
+		// we jump 65 (0x41) per signature
+		// for v we load 32 bytes ending with v (the first 31 come from s) then apply a mask
         assembly {
             r := mload(add(_signature, 0x20))
             s := mload(add(_signature, 0x40))

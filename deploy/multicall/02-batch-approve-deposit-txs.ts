@@ -20,7 +20,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	// ERC20 Token
 	const erc20 = await deployer.loadArtifact('MyERC20');
-	const erc20Contract = new Contract(address.erc20, erc20.abi, wallet);
+	const erc20Contract = new Contract(address.myerc20, erc20.abi, wallet);
 
 	// Spender Contract
 	const spenderArtifact = await deployer.loadArtifact('Spender');
@@ -30,13 +30,13 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	const erc20AccountBalance = await erc20Contract.balanceOf(address.account);
 	console.log(
-		'Account token balance before batch transaction',
+		'Account token balance before batch transaction: ',
 		ethers.utils.formatEther(erc20AccountBalance)
 	);
 
 	const erc20SpenderBalance = await erc20Contract.balanceOf(address.spender);
 	console.log(
-		'Spender token balance before batch transaction',
+		'Spender token balance before batch transaction: ',
 		ethers.utils.formatEther(erc20SpenderBalance)
 	);
 
@@ -44,7 +44,6 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		address.account,
 		address.spender
 	);
-
 	console.log(
 		'Spender allowance before transfer: ',
 		ethers.utils.formatEther(erc20SpenderAllowance)
@@ -64,7 +63,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	// 2. TX - Deposit (transferFrom) ERC20 Token from account to the Spender address
 	const depositTx = await spender.populateTransaction.deposit(
-		address.erc20,
+		address.myerc20,
 		AMOUNT
 	);
 
@@ -89,7 +88,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('General Flow Paymaster data obtained');
 
 	let tx: types.TransactionRequest = await getEIP712TxRequest(
-		provider,
+		wallet.provider,
 		address.account,
 		address.account,
 		multiTx,
@@ -98,7 +97,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	tx = await addSignature(tx, wallet);
 
-	const status = await provider.sendTransaction(utils.serialize(tx));
+	const status = await wallet.provider.sendTransaction(utils.serialize(tx));
 	const txWait = await status.wait();
 
 	console.log('Status', txWait.status);

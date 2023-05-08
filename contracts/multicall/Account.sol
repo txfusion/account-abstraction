@@ -59,7 +59,6 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
     }
 
     /// @param _owner: single signer of this account contract
-
     constructor(address _owner) {
         owner = _owner;
     }
@@ -89,7 +88,7 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
         ignoreInDelegateCall
         returns (bytes4 magic)
     {
-        return _validateTransaction(_suggestedSignedHash, _transaction);
+        magic = _validateTransaction(_suggestedSignedHash, _transaction);
     }
 
     /// @notice Inner method for validating transaction and increasing the nonce
@@ -105,8 +104,7 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
             address(NONCE_HOLDER_SYSTEM_CONTRACT),
             0,
             abi.encodeCall(
-                INonceHolder(NONCE_HOLDER_SYSTEM_CONTRACT)
-                    .incrementMinNonceIfEquals,
+                INonceHolder(NONCE_HOLDER_SYSTEM_CONTRACT).incrementMinNonceIfEquals,
                 (_transaction.nonce)
             )
         );
@@ -116,18 +114,10 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
             : _suggestedSignedHash;
 
         uint256 totalRequiredBalance = _transaction.totalRequiredBalance();
-        require(
-            totalRequiredBalance <= address(this).balance,
-            "Not enough balance for fee + value"
-        );
+        require(totalRequiredBalance <= address(this).balance, "Not enough balance for fee + value");
 
-        if (
-            isValidSignature(txHash, _transaction.signature) ==
-            EIP1271_SUCCESS_RETURN_VALUE
-        ) {
+        if (isValidSignature(txHash, _transaction.signature) == EIP1271_SUCCESS_RETURN_VALUE) {
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
-        } else {
-            magic = bytes4(0);
         }
     }
 
@@ -137,13 +127,21 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
     /// @return magic The bytes4 value that is ACCOUNT_VALIDATION_SUCCESS_MAGIC if valid
     function isValidSignature(
         bytes32 _hash,
-        bytes calldata _signature
+        bytes memory _signature
     ) public view override returns (bytes4 magic) {
         magic = EIP1271_SUCCESS_RETURN_VALUE;
 
-        bytes memory signature = SignatureHelper.extractECDSASignature(
-            _signature
-        );
+        if (_signature.length != 65) {
+            // Signature is invalid anyway, but we need to proceed with the signature verification as usual
+            // in order for the fee estimation to work correctly
+            _signature = new bytes(65);
+            
+            // Making sure that the signatures look like a valid ECDSA signature and are not rejected rightaway
+            // while skipping the main verification process.
+            _signature[64] = bytes1(uint8(27));
+        }
+
+        bytes memory signature = SignatureHelper.extractECDSASignature(_signature);
 
         if (!SignatureHelper.checkValidECDSASignatureFormat(signature)) {
             magic = bytes4(0);

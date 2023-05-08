@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IPaymaster, ExecutionResult, PAYMASTER_VALIDATION_SUCCESS_MAGIC} from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymaster.sol";
-import {IPaymasterFlow} from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymasterFlow.sol";
-import {TransactionHelper, Transaction} from "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
+import { 
+    IPaymaster,
+    ExecutionResult,
+    PAYMASTER_VALIDATION_SUCCESS_MAGIC
+} from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymaster.sol";
+import { IPaymasterFlow } from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymasterFlow.sol";
+import { TransactionHelper, Transaction } from "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -21,7 +25,7 @@ contract Paymaster is IPaymaster {
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
             "Only bootloader can call this method"
         );
-        // Continure execution if called from the bootloader.
+        // Continue execution if called from the bootloader.
         _;
     }
 
@@ -52,9 +56,7 @@ contract Paymaster is IPaymaster {
             }("");
 
             require(success, "Failed to transfer funds to the bootloader");
-        } else if (
-            paymasterInputSelector == IPaymasterFlow.approvalBased.selector
-        ) {
+        } else if (paymasterInputSelector == IPaymasterFlow.approvalBased.selector) {
             // While the transaction data consists of address, uint256 and bytes data,
             // the data is not needed for this paymaster
             (address token, uint256 amount, bytes memory data) = abi.decode(
