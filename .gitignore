@@ -2,5 +2,5 @@
 .env
 /artifacts-zk
 /cache-zk
-.id_rsa_work_user1.pub
-.id_rsa_work_user1
+id_rsa_work_user1.pub
+id_rsa_work_user1
