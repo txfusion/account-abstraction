@@ -13,6 +13,15 @@ using TransactionHelper for Transaction;
 address public owner;
 bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
+modifier onlyBootloader() {
+        require(
+            msg.sender == BOOTLOADER_FORMAL_ADDRESS,
+            "Only bootloader can call this method"
+        );
+        // Continure execution if called from the bootloader.
+        _;
+    }
+
 constructor(address _owner) {
     owner = _owner;
 }
@@ -87,7 +96,7 @@ function isValidSignature(bytes32 _hash, bytes memory _signature)
     magic = EIP1271_SUCCESS_RETURN_VALUE;
 
     if (_signature.length != 65) {
-    _signature = new bytes(130);
+    _signature = new bytes(65);
             
             // Making sure that the signatures look like a valid ECDSA signature and are not rejected rightaway
             // while skipping the main verification process.
