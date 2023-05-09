@@ -1,0 +1,40 @@
+[{
+    "address": "0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd",
+    "chainId": 270,
+    "name": "PieDAOBTC++",
+    "symbol": "BTC",
+    "decimals": 18,
+    "logoURI": "https://tokens.1inch.io/0x0327112423f3a68efdf1fcf402f6c5cb9f7c33fd.png"
+},
+{
+    "address": "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828",
+    "chainId": 270,
+    "name": "UMAVotingTokenv1",
+    "symbol": "UMA",
+    "decimals": 18,
+    "logoURI": "https://tokens.1inch.io/0x04fa0d235c4abf4bcf4787af4cf447de572ef828.png"
+},
+{
+    "address": "0x08d967bb0134F2d07f7cfb6E246680c53927DD30",
+    "chainId": 270,
+    "name": "MATHToken",
+    "symbol": "MATH",
+    "decimals": 18,
+    "logoURI": "https://tokens.1inch.io/0x08d967bb0134f2d07f7cfb6e246680c53927dd30.png"
+},
+{
+    "address": "0x0A913beaD80F321E7Ac35285Ee10d9d922659cB7",
+    "chainId": 270,
+    "name": "DOSNetworkToken",
+    "symbol": "DOS",
+    "decimals": 18,
+    "logoURI": "https://tokens.1inch.io/0x0a913bead80f321e7ac35285ee10d9d922659cb7.png"
+},
+{
+    "address": "0x0Ae055097C6d159879521C384F1D2123D1f195e6",
+    "chainId": 270,
+    "name": "STAKE",
+    "symbol": "STAKE",
+    "decimals": 18,
+    "logoURI": "https://tokens.1inch.io/0x0ae055097c6d159879521c384f1d2123d1f195e6.png"
+}]

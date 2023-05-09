@@ -57,7 +57,7 @@ export default function AccountManagmentModal({ isOpen, onClose, connectAccount,
             <FormControl>
               <PurpleInput placeHolder="0xA4...B4D5" setValue={setAddressValue} text={"Connect Account"}></PurpleInput>
               <Flex alignItems="center" mt={2} mb={4}>
-                <PurpleButton onClick={connectAccount} closeClick={onClose} attributes={{adressValue, setConnected}} text={"Connect"}></PurpleButton>
+                <PurpleButton onClick={connectAccount} closeClick={onClose} attributes={{ adressValue, setConnected }} text={"Connect"}></PurpleButton>
               </Flex>
             </FormControl>
           </ModalBody>

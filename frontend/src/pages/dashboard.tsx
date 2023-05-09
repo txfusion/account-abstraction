@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import {
   useAccount,
 } from "wagmi";
-import { SendTransaction } from "../components/SendTransaction";
-import { Box, Image, Text, Link, Container, VStack, StackDivider, useDisclosure, Button, FormControl, FormLabel, Input, Flex, Center, AbsoluteCenter } from "@chakra-ui/react";
+import { Box, Flex, useDisclosure } from "@chakra-ui/react";
 import AccountManagmentModal from "@/components/AccountManagmentModal";
 import { PurpleButton } from "@/components/buttons/PurpleButton";
 import { PurpleInput } from "@/components/inputs/PurpleInput";
 import { connectAccount, createAccount, disconectAccount } from "@/libs/accountManagment";
 import { AccountButton } from "@/components/buttons/AccountButton";
+import { columns } from "../libs/poolsTable"
+import { DataTable } from "@/components/DataTable";
+import { SearchIcon } from "@chakra-ui/icons";
 
 
 function Dashboard() {
@@ -16,46 +18,54 @@ function Dashboard() {
   let { isConnected } = useAccount();
   let [connected, setConnected] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [adressValue, setAddressValue] = useState('');
-  const [coinValue, setCoinValue] = useState('');
+  const [globalFilter, setGlobalFilterState] = useState('');
 
-  const [hasMounted, setHasMounted] = useState(false);
+  const [data, setData] = useState(null);
+  const [isLoading, setLoading] = useState(false);
+
   useEffect(() => {
-    setHasMounted(true);
+    setLoading(true);
+    fetch('/api/pools')
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      });
   }, []);
 
-  if (!hasMounted) {
-    return null;
-  }
+  if (isLoading) return <p>Loading...</p>;
+  if (!data) return <p>No profile data</p>;
 
   return (
     <>
       <AccountManagmentModal isOpen={isOpen} onClose={onClose} setConnected={setConnected} connectAccount={connectAccount} createAccount={createAccount}></AccountManagmentModal>
       <Box
         ms="100"
-        mt="100"
         me="100"
-        p={4}
+        p={5}
         justifyItems="center"
         justifySelf="center"
-        border="0.2rem"
+        border="0.1rem"
         backgroundColor="black"
         borderStyle="solid"
         borderColor="system-purple.500"
         borderRadius="3xl"
+        w="50%"
       >
-        <Flex m={1} mb="50">
+        <Flex>
           {!connected ? <PurpleButton onClick={onOpen} text={"Account Managment"}></PurpleButton> : <AccountButton disconnect={disconectAccount} setConnected={setConnected}></AccountButton>}
         </Flex>
-        <Flex w="50%" m={3}>
-          <FormControl>
-            <PurpleInput placeHolder="0x3D...G4K3" setValue={setAddressValue} text={"Address"}></PurpleInput>
-            <PurpleInput placeHolder="1 ETH" setValue={setCoinValue} text={"Coins"}></PurpleInput>
-            <Flex mt={2} mb={4}>
-              <PurpleButton onClick={null} text={"Send"}></PurpleButton>
-            </Flex>
-          </FormControl>
-        </Flex>
+        <Box
+          backgroundColor="system-gray.900"
+          borderStyle="solid"
+          border="0.4rem"
+          borderRadius="2xl"
+          mt="10"
+          pt="2"
+          pb="10">
+          <PurpleInput icon={<SearchIcon color="white"/>} text={""} w="20%" placeHolder="Search" setValue={setGlobalFilterState}></PurpleInput>
+          <DataTable columns={columns} data={data} globalFilter={globalFilter} setGlobalFilterState={setGlobalFilterState} mergeObjects={[{ mergeField: "name", mergeWith: "logoURI", isImage: true }]} buttonEnd={{ text: "Deposit", onClick: null }} />
+        </Box>
       </Box>
     </>
   );

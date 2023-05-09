@@ -20,7 +20,7 @@ export function AccountButton({ disconnect, setConnected }: Props) {
                 </HStack>
             </MenuButton>
             <MenuList backgroundColor="system-gray.100" borderRadius="xl" borderColor="system-purple.500" borderStyle="solid">
-                <MenuItem backgroundColor="system-gray.100" onClick={() => disconnect({setConnected})}>
+                <MenuItem backgroundColor="system-gray.100" onClick={() => disconnect({ setConnected })}>
                     <HStack>
                         <ExternalLinkIcon color="white"></ExternalLinkIcon>
                         <Text textColor="white">
@@ -28,7 +28,7 @@ export function AccountButton({ disconnect, setConnected }: Props) {
                         </Text>
                     </HStack>
                 </MenuItem>
-                <MenuDivider/>
+                <MenuDivider />
                 <MenuItem backgroundColor="system-gray.100" onClick={() => navigator.clipboard.writeText("0xD3...32G3")}>
                     <HStack>
                         <CopyIcon color="white"></CopyIcon>

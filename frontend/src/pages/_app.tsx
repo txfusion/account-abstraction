@@ -7,6 +7,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { NavBar } from "../components/NavBar";
 import defaultChains from "../libs/chains"
 import '../styles/globals.css';
+import Footer from "@/components/Footer";
 
 const { chains, provider } = configureChains(
   defaultChains,
@@ -35,6 +36,13 @@ const theme = extendTheme({
       500: "#623485",
     },
   },
+  styles: {
+    global: () => ({
+      body: {
+        bg: "black"
+      },
+    }),
+  },
 })
 
 
@@ -48,7 +56,12 @@ function App({ Component, pageProps }) {
       })} modalSize="compact" coolMode={true}>
         <ChakraProvider theme={theme}>
           <NavBar />
-          <Component {...pageProps} />
+          <main>
+            <Component {...pageProps} />
+          </main>
+          <footer className="footer">
+            <Footer />
+          </footer>
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>

@@ -1,4 +1,4 @@
-import {zkSyncTestnet, zkSync} from '@wagmi/chains'
+import { zkSyncTestnet, zkSync } from '@wagmi/chains'
 
 const zkSyncLocal = {
   id: 270,
@@ -7,23 +7,23 @@ const zkSyncLocal = {
   nativeCurrency: {
     name: "Ether",
     symbol: "ETH",
-     decimals: 18
-},
+    decimals: 18
+  },
   rpcUrls: {
-     default: {
-        http: ["http://localhost:8450"]
+    default: {
+      http: ["http://localhost:8450"]
     },
     public: {
       http: ["http://localhost:8450"]
     }
   },
   blockExplorers: {
-       default: {
-          name: "zkExplorer",
-          url: 'https://zksync2-testnet.zkscan.io'
-      }
-    },
-    testnet: true,
+    default: {
+      name: "zkExplorer",
+      url: 'https://zksync2-testnet.zkscan.io'
+    }
+  },
+  testnet: true,
 };
 
 function defaultChains() {
