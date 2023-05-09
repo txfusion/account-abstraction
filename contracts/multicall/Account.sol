@@ -10,13 +10,10 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/openzeppelin/utils/Addr
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-
 import "./Multicall.sol";
-import "./SignatureHelper.sol";
 
 contract Account is IAccount, IERC165, IERC1271, Multicall {
     using TransactionHelper for Transaction;
-    using SignatureHelper for bytes;
 
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
@@ -104,7 +101,8 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
             address(NONCE_HOLDER_SYSTEM_CONTRACT),
             0,
             abi.encodeCall(
-                INonceHolder(NONCE_HOLDER_SYSTEM_CONTRACT).incrementMinNonceIfEquals,
+                INonceHolder(NONCE_HOLDER_SYSTEM_CONTRACT)
+                    .incrementMinNonceIfEquals,
                 (_transaction.nonce)
             )
         );
@@ -114,9 +112,15 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
             : _suggestedSignedHash;
 
         uint256 totalRequiredBalance = _transaction.totalRequiredBalance();
-        require(totalRequiredBalance <= address(this).balance, "Not enough balance for fee + value");
+        require(
+            totalRequiredBalance <= address(this).balance,
+            "Not enough balance for fee + value"
+        );
 
-        if (isValidSignature(txHash, _transaction.signature) == EIP1271_SUCCESS_RETURN_VALUE) {
+        if (
+            isValidSignature(txHash, _transaction.signature) ==
+            EIP1271_SUCCESS_RETURN_VALUE
+        ) {
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
         }
     }
@@ -135,15 +139,15 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
             // Signature is invalid anyway, but we need to proceed with the signature verification as usual
             // in order for the fee estimation to work correctly
             _signature = new bytes(65);
-            
+
             // Making sure that the signatures look like a valid ECDSA signature and are not rejected rightaway
             // while skipping the main verification process.
             _signature[64] = bytes1(uint8(27));
         }
 
-        bytes memory signature = SignatureHelper.extractECDSASignature(_signature);
+        bytes memory signature = extractECDSASignature(_signature);
 
-        if (!SignatureHelper.checkValidECDSASignatureFormat(signature)) {
+        if (!checkValidECDSASignatureFormat(signature)) {
             magic = bytes4(0);
         }
 
@@ -152,6 +156,58 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
         if (recoveredAddr != owner) {
             magic = bytes4(0);
         }
+    }
+
+    function extractECDSASignature(
+        bytes memory _signature
+    ) internal pure returns (bytes memory signature) {
+        require(_signature.length == 65, "Invalid length");
+
+        signature = new bytes(65);
+
+        assembly {
+            let r := mload(add(_signature, 0x20))
+            let s := mload(add(_signature, 0x40))
+            let v := and(mload(add(_signature, 0x41)), 0xff)
+
+            mstore(add(signature, 0x20), r)
+            mstore(add(signature, 0x40), s)
+            mstore8(add(signature, 0x60), v)
+        }
+    }
+
+    function checkValidECDSASignatureFormat(
+        bytes memory _signature
+    ) internal pure returns (bool) {
+        if (_signature.length != 65) {
+            return false;
+        }
+
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+
+        // Signature loading code
+        // we jump 32 (0x20) as the first slot of bytes contains the length
+        // we jump 65 (0x41) per signature
+        // for v we load 32 bytes ending with v (the first 31 come from s) then apply a mask
+        assembly {
+            r := mload(add(_signature, 0x20))
+            s := mload(add(_signature, 0x40))
+            v := and(mload(add(_signature, 0x41)), 0xff)
+        }
+        if (v != 27 && v != 28) {
+            return false;
+        }
+
+        if (
+            uint256(s) >
+            0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     // ---------------------------------- //

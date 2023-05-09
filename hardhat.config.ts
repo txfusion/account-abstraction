@@ -8,7 +8,7 @@ const zkSyncNetwork = {
 	url: process.env.ZK_PROVIDER_URL,
 	ethNetwork: process.env.ETH_NETWORK_URL,
 	zksync: true,
-},
+};
 
 const compilers = [
 	{ version: '0.8.1' },
