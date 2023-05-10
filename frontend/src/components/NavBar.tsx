@@ -16,18 +16,26 @@ export const NavBar = () => {
       <Box
         bg='system-purple.500'
         px={4}>
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-          <HStack spacing={8} alignItems={'center'}>
-            <Link fontSize="xl"
+        <Flex
+          h={16}
+          alignItems={'center'}
+          justifyContent={'space-between'}>
+          <HStack
+            spacing={8}
+            alignItems={'center'}>
+            <Link
+              fontSize="xl"
               textColor={`${router.pathname == "/" ? "black" : "white"}`}
               fontWeight="bold"
               href='/'
               _hover={{
                 textDecoration: 'none',
                 textColor: "system-gray.900"
-              }}>Home
+              }}>
+              Home
             </Link>
-            <Link fontSize="xl"
+            <Link
+              fontSize="xl"
               textColor={`${router.pathname == "/dashboard" ? "black" : "white"}`}
               fontWeight="bold"
               href='/dashboard'
@@ -35,7 +43,8 @@ export const NavBar = () => {
                 textDecoration: 'none',
                 textColor: "system-gray.900"
               }}>
-              Dashboard</Link>
+              Dashboard
+            </Link>
           </HStack>
           <ConnectButton />
         </Flex>

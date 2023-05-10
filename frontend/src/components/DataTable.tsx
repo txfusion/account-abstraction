@@ -15,32 +15,12 @@ import {
   rankItem,
 } from '@tanstack/match-sorter-utils'
 import { ColumnDefExtended } from "@/libs/poolsTable";
-import { PurpleButton } from "./buttons/PurpleButton";
-
-export type ImageObject = {
-  isImage: boolean
-}
-
-export type MergeObject = {
-  mergeField: string
-  mergeWith: string
-  isImage: boolean
-}
-
-export type ButtonEnd = {
-  text: String,
-  onClick: any,
-  closeClick?: any,
-  attributes?: any
-}
 
 export type DataTableProps<Data extends object> = {
   data: Data[];
   columns: ColumnDefExtended<Data, any>[];
   globalFilter?: string
   setGlobalFilterState?: any
-  buttonEnd?: ButtonEnd
-  mergeObjects?: MergeObject[]
 };
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -58,9 +38,7 @@ export function DataTable<Data extends object>({
   data,
   columns,
   globalFilter,
-  setGlobalFilterState,
-  buttonEnd,
-  mergeObjects
+  setGlobalFilterState
 }: DataTableProps<Data>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -94,26 +72,26 @@ export function DataTable<Data extends object>({
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
                   isNumeric={meta?.isNumeric}
-                  borderColor="system-purple.500"
-                >
+                  borderColor="system-purple.500">
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
                   )}
-
-                  <chakra.span pl="4">
+                  <chakra.span
+                    pl="4">
                     {header.column.getIsSorted() ? (
                       header.column.getIsSorted() === "desc" ? (
-                        <TriangleDownIcon aria-label="sorted descending" />
+                        <TriangleDownIcon
+                          aria-label="sorted descending" />
                       ) : (
-                        <TriangleUpIcon aria-label="sorted ascending" />
+                        <TriangleUpIcon
+                          aria-label="sorted ascending" />
                       )
                     ) : null}
                   </chakra.span>
                 </Th>
               );
             })}
-            {buttonEnd ? <Th borderColor="system-purple.500"></Th> : null}
           </Tr>
         ))}
       </Thead>
@@ -127,33 +105,17 @@ export function DataTable<Data extends object>({
             textColor="white">
             {row.getAllCells().map((cell) => {
               const meta: any = cell.column.columnDef.meta;
-              const mergeObject = mergeObjects?.find(f => cell.id.includes(f.mergeField));
-              if (mergeObject) {
-                const mergeValue = row.original[mergeObject.mergeWith];
-                return (
-                  <Td borderColor="system-purple.500" key={cell.id} isNumeric={meta?.isNumeric}>
-                    <HStack spacing={5}>
-                      <Box borderColor="system-purple.500" border="0.2rem">
-                        {mergeObject.isImage ? <Image boxSize='50px' src={mergeValue} alt='Image' /> : <div>{mergeValue}</div>}
-                      </Box>
-                      <Box>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </Box>
-                    </HStack>
-                  </Td>
-                );
-              }
               return (
-                <Td borderColor="system-purple.500" key={cell.id} isNumeric={meta?.isNumeric}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                <Td
+                  borderColor="system-purple.500"
+                  key={cell.id}
+                  isNumeric={meta?.isNumeric}>
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
                 </Td>)
             })}
-            {buttonEnd ?
-              <Td borderColor="system-purple.500" key={"button"}>
-                <PurpleButton text={buttonEnd.text} onClick={buttonEnd.onClick} attributes={buttonEnd.attributes} closeClick={buttonEnd.closeClick}></PurpleButton>
-              </Td>
-              : null
-            }
           </Tr>
         ))
         }

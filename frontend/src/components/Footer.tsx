@@ -7,13 +7,17 @@ import {
     Text,
     Link,
     VisuallyHidden,
-    chakra,
-    useColorModeValue
+    useColorModeValue,
+    Button
 } from '@chakra-ui/react';
 
 const ListHeader = ({ children }: { children: ReactNode }) => {
     return (
-        <Text fontWeight={'500'} fontSize={'lg'} textColor="white" mb={2}>
+        <Text
+            fontWeight={'500'}
+            fontSize={'lg'}
+            textColor="white"
+            mb={2}>
             {children}
         </Text>
     );
@@ -29,8 +33,8 @@ const SocialButton = ({
     href: string;
 }) => {
     return (
-        <chakra.button
-            bg={useColorModeValue('blackAlpha.100', 'whiteAlpha.100')}
+        <Button
+            bg="system-gray.100"
             rounded={'full'}
             w={8}
             h={8}
@@ -44,23 +48,39 @@ const SocialButton = ({
             _hover={{
                 bg: useColorModeValue('blackAlpha.200', 'whiteAlpha.200'),
             }}>
-            <VisuallyHidden>{label}</VisuallyHidden>
+            <VisuallyHidden>
+                {label}
+            </VisuallyHidden>
             {children}
-        </chakra.button>
+        </Button>
     );
 };
 
 export default function Footer() {
     return (
         <Box
-        className="fixed inset-x-0 bottom-0"
+            className="fixed inset-x-0 bottom-0"
             bg="system-purple.500">
-            <Container as={Stack} maxW={'6xl'} py={10}>
-                <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
-                    <Stack align={'flex-start'}>
+            <Container
+                as={Stack}
+                maxW={'6xl'}
+                py={10}>
+                <SimpleGrid
+                    columns={{ base: 1, sm: 2, md: 4 }}
+                    spacing={8}>
+                    <Stack
+                        align={'flex-start'}>
                         <ListHeader>Company</ListHeader>
-                        <Link href={'/'} textColor="white">Home</Link>
-                        <Link href={'/dasboard'} textColor="white">Dashboard</Link>
+                        <Link
+                            href={'/'}
+                            textColor="white">
+                            Home
+                        </Link>
+                        <Link
+                            href={'/dasboard'}
+                            textColor="white">
+                            Dashboard
+                        </Link>
                     </Stack>
                 </SimpleGrid>
             </Container>
@@ -76,13 +96,24 @@ export default function Footer() {
                     spacing={4}
                     justify={{ md: 'space-between' }}
                     align={{ md: 'center' }}>
-                    <Text textColor="white">© 2023 TxFusion. All rights reserved</Text>
-                    <Stack direction={'row'} spacing={6}>
-                        <SocialButton label={'Discord'} href={'#'}>
+                    <Text
+                        textColor="white">
+                        © 2023 TxFusion. All rights reserved
+                    </Text>
+                    <Stack
+                        direction={'row'}
+                        spacing={6}>
+                        <SocialButton
+                            label={'Discord'}
+                            href={'#'}>
                         </SocialButton>
-                        <SocialButton label={'Site'} href={'#'}>
+                        <SocialButton
+                            label={'Site'}
+                            href={'#'}>
                         </SocialButton>
-                        <SocialButton label={'Site2'} href={'#'}>
+                        <SocialButton
+                            label={'Site2'}
+                            href={'#'}>
                         </SocialButton>
                     </Stack>
                 </Container>

@@ -7,19 +7,27 @@ type Props = {
   setValue: any
   w?: string
   h?: string
+  m?: string
+  size?:string
   icon?: JSX.Element
 }
 
-export function PurpleInput({ text, setValue, placeHolder, w, h, icon }: Props) {
+export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, icon }: Props) {
   return (
     <>
-      <Box mb="4" w={w} h={h}>
+      <Box
+        mb="4"
+        w={w}
+        h={h}
+        m={m}>
         <FormLabel>
-          <Text color="system-gray.500" fontSize="l">
+          <Text
+            color="system-gray.500"
+            fontSize="l">
             {text}
           </Text>
         </FormLabel>
-        <InputGroup>
+        <InputGroup size={size}>
           {icon ? <InputLeftElement
             pointerEvents='none'
             children={icon}
@@ -32,8 +40,7 @@ export function PurpleInput({ text, setValue, placeHolder, w, h, icon }: Props) 
             borderRadius="3xl"
             placeholder={placeHolder}
             textColor="white"
-            onChange={e => { setValue(e.currentTarget.value); }}
-          />
+            onChange={e => { setValue(e.currentTarget.value);}}/>
         </InputGroup>
       </Box>
     </>

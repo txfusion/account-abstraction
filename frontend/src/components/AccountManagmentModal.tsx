@@ -30,15 +30,18 @@ export default function AccountManagmentModal({ isOpen, onClose, connectAccount,
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        isCentered
-      >
-        <ModalOverlay />
+        isCentered>
+        <ModalOverlay/>
         <ModalContent
           borderRadius="3xl"
-          backgroundColor="system-gray.900"
-        >
+          border="0.12rem"
+          borderStyle="solid"
+          borderColor="system-gray.100"
+          backgroundColor="system-gray.900">
           <ModalHeader>
-            <Text color="white" fontSize="xl">
+            <Text
+              color="white"
+              fontSize="xl">
               Account Managment
             </Text>
           </ModalHeader>
@@ -47,23 +50,38 @@ export default function AccountManagmentModal({ isOpen, onClose, connectAccount,
             color="system-gray.500"
             fontSize="xs"
             borderRadius="3xl"
-            backgroundColor="system-gray.100"
-          />
-          <ModalBody pb={6}
+            backgroundColor="system-gray.100"/>
+          <ModalBody
+            pb={6}
             borderBottom="0.06rem"
             borderBottomColor="system-purple.500"
-            borderBottomStyle="dashed"
-          >
+            borderBottomStyle="dashed">
             <FormControl>
-              <PurpleInput placeHolder="0xA4...B4D5" setValue={setAddressValue} text={"Connect Account"}></PurpleInput>
-              <Flex alignItems="center" mt={2} mb={4}>
-                <PurpleButton onClick={connectAccount} closeClick={onClose} attributes={{ adressValue, setConnected }} text={"Connect"}></PurpleButton>
+              <PurpleInput
+                placeHolder="0xA4...B4D5"
+                setValue={setAddressValue}
+                text={"Connect Account"}/>
+              <Flex
+                alignItems="center"
+                mt={2}
+                mb={4}>
+                <PurpleButton
+                  onClick={connectAccount}
+                  closeClick={onClose}
+                  attributes={{ adressValue, setConnected }}
+                  text={"Connect"}/>
               </Flex>
             </FormControl>
           </ModalBody>
-          <ModalBody pb={6}>
-            <Flex alignItems="center" mt={2}>
-              <PurpleButton onClick={createAccount} closeClick={onClose} text={"Create Account"}></PurpleButton>
+          <ModalBody
+            pb={6}>
+            <Flex
+              alignItems="center"
+              mt={2}>
+              <PurpleButton
+                onClick={createAccount}
+                closeClick={onClose}
+                text={"Create Account"}/>
             </Flex>
           </ModalBody>
         </ModalContent>

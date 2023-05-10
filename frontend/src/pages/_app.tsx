@@ -55,12 +55,12 @@ function App({ Component, pageProps }) {
         borderRadius: 'large',
       })} modalSize="compact" coolMode={true}>
         <ChakraProvider theme={theme}>
-          <NavBar />
+          <NavBar/>
           <main>
-            <Component {...pageProps} />
+            <Component {...pageProps}/>
           </main>
           <footer className="footer">
-            <Footer />
+            <Footer/>
           </footer>
         </ChakraProvider>
       </RainbowKitProvider>

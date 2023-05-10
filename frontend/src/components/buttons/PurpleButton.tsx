@@ -9,8 +9,13 @@ type Props = {
 
 export function PurpleButton({ onClick, closeClick, text, attributes }: Props) {
     return (
-        <Button colorScheme="system-purple" onClick={() => { onClick(attributes); closeClick != null ? closeClick() : null }} borderRadius="xl">
-            <Text color="white" fontSize="sm">
+        <Button
+            colorScheme="system-purple"
+            onClick={() => { onClick(attributes); closeClick != null ? closeClick() : null }}
+            borderRadius="xl">
+            <Text
+                color="white"
+                fontSize="sm">
                 {text}
             </Text>
         </Button>

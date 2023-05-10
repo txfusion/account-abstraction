@@ -38,10 +38,14 @@ function Dashboard() {
 
   return (
     <>
-      <AccountManagmentModal isOpen={isOpen} onClose={onClose} setConnected={setConnected} connectAccount={connectAccount} createAccount={createAccount}></AccountManagmentModal>
+      <AccountManagmentModal
+        isOpen={isOpen}
+        onClose={onClose}
+        setConnected={setConnected}
+        connectAccount={connectAccount}
+        createAccount={createAccount}/>
       <Box
-        ms="100"
-        me="100"
+        ms="25%"
         p={5}
         justifyItems="center"
         justifySelf="center"
@@ -50,10 +54,17 @@ function Dashboard() {
         borderStyle="solid"
         borderColor="system-purple.500"
         borderRadius="3xl"
-        w="50%"
-      >
+        w="50%">
         <Flex>
-          {!connected ? <PurpleButton onClick={onOpen} text={"Account Managment"}></PurpleButton> : <AccountButton disconnect={disconectAccount} setConnected={setConnected}></AccountButton>}
+          {!connected ?
+            <PurpleButton
+              onClick={onOpen}
+              text={"Account Managment"} />
+            :
+            <AccountButton
+              disconnect={disconectAccount}
+              setConnected={setConnected} />
+          }
         </Flex>
         <Box
           backgroundColor="system-gray.900"
@@ -63,8 +74,18 @@ function Dashboard() {
           mt="10"
           pt="2"
           pb="10">
-          <PurpleInput icon={<SearchIcon color="white"/>} text={""} w="20%" placeHolder="Search" setValue={setGlobalFilterState}></PurpleInput>
-          <DataTable columns={columns} data={data} globalFilter={globalFilter} setGlobalFilterState={setGlobalFilterState} mergeObjects={[{ mergeField: "name", mergeWith: "logoURI", isImage: true }]} buttonEnd={{ text: "Deposit", onClick: null }} />
+          <PurpleInput
+            icon={<SearchIcon color="white"/>}
+            text={""}
+            w="20%"
+            placeHolder="Search"
+            m="1"
+            setValue={setGlobalFilterState}/>
+          <DataTable
+            columns={columns}
+            data={data}
+            globalFilter={globalFilter}
+            setGlobalFilterState={setGlobalFilterState}/>
         </Box>
       </Box>
     </>
