@@ -5,6 +5,7 @@ import { rich_wallet } from '../utils/rich_wallet';
 import { address } from '../utils/address';
 import { ethers } from 'ethers';
 import {
+	BATCH_SELECTOR,
 	addSignature,
 	constructBatchedCalldata,
 	getApprovalBasedPaymasterData,
@@ -25,6 +26,10 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	// USDC Token
 	const usdc = await deployer.loadArtifact('MyERC20');
 	const usdcContract = new Contract(address.usdc, usdc.abi, wallet);
+
+	// Smart Account
+	const account = await deployer.loadArtifact('Account');
+	const accountContract = new Contract(address.account, account.abi, wallet);
 
 	// Account token balance
 	const erc20AccountBalance = await erc20Contract.balanceOf(address.account);
@@ -47,7 +52,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('=============================================');
 
 	let transactionList: any[] = [];
-	for (let i = 0; i < 80; i++) {
+	for (let i = 0; i < 101; i++) {
 		transactionList[i] = await erc20Contract.populateTransaction.transfer(
 			address.spender,
 			AMOUNT
@@ -55,7 +60,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	}
 
 	// concatenate multiple txs
-	const multiTx = await constructBatchedCalldata([...transactionList]);
+	const multiTxCalldata = await constructBatchedCalldata([...transactionList]);
 
 	console.log('TXs batched');
 
@@ -63,6 +68,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	const paymasterData: types.Eip712Meta = await getApprovalBasedPaymasterData(
 		provider,
 		address.usdc,
+		accountContract,
+		'multicall',
+		multiTxCalldata.replace(BATCH_SELECTOR, '0x'),
 		address.paymaster
 	);
 
@@ -72,7 +80,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		provider,
 		address.account,
 		address.account,
-		multiTx,
+		multiTxCalldata,
 		paymasterData
 	);
 

@@ -14,7 +14,7 @@ export default async function(hre: HardhatRuntimeEnvironment) {
 	const deployer = new Deployer(hre, wallet);
 
 	const erc20 = await deployContract(deployer, 'MyERC20', [18]);
-	const usdc = await deployContract(deployer, 'USDC');
+	const usdc = await deployContract(deployer, 'USDC', [6]);
 	await deployContract(deployer, 'Spender');
 	const paymaster = await deployContract(deployer, 'Paymaster', [usdc.address]);
 	
@@ -22,7 +22,7 @@ export default async function(hre: HardhatRuntimeEnvironment) {
 	await (
 		await deployer.zkWallet.sendTransaction({
 			to: paymaster.address,
-			value: ethers.utils.parseEther('100'),
+			value: MINT_AMOUNT,
 		})
 	).wait();
 		
@@ -31,8 +31,11 @@ export default async function(hre: HardhatRuntimeEnvironment) {
 	(await erc20.mint(wallet.address, MINT_AMOUNT)).wait();
 	console.log(`Minted ${MINT_AMOUNT} tokens for the empty wallet`);
 
-	(await usdc.mint(accountContract.address, MINT_AMOUNT)).wait();
+	(await usdc.mint(wallet.address, MINT_AMOUNT)).wait();
 	console.log(`Minted ${MINT_AMOUNT} USDC tokens for the empty wallet`);
+
+	(await usdc.mint(accountContract.address, MINT_AMOUNT)).wait();
+	console.log(`Minted ${MINT_AMOUNT} USDC tokens for the deployed Account`);
 
 	(await erc20.mint(accountContract.address, MINT_AMOUNT)).wait();
 	console.log(`Minted ${MINT_AMOUNT} tokens for the deployed Account`);

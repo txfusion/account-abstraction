@@ -88,7 +88,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('General Flow Paymaster data obtained');
 
 	let tx: types.TransactionRequest = await getEIP712TxRequest(
-		wallet.provider,
+		provider,
 		address.account,
 		address.account,
 		multiTx,
@@ -97,7 +97,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	tx = await addSignature(tx, wallet);
 
-	const status = await wallet.provider.sendTransaction(utils.serialize(tx));
+	const status = await provider.sendTransaction(utils.serialize(tx));
 	const txWait = await status.wait();
 
 	console.log('Status', txWait.status);

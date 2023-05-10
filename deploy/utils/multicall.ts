@@ -9,11 +9,11 @@ import {
 } from 'zksync-web3';
 import { address } from './address';
 
-const BATCH_SELECTOR = '0x29451959';
+export const BATCH_SELECTOR = '0x29451959';
 
 export async function constructBatchedCalldata(
 	transactions: ethers.PopulatedTransaction[]
-): Promise<any> {
+): Promise<string> {
 	const isDelegatecalls: boolean[] = [];
 	const targets: string[] = [];
 	const methods: string[] = [];
@@ -62,38 +62,48 @@ export async function getGeneralFlowPaymasterData(
 export async function getApprovalBasedPaymasterData(
 	provider: Provider,
 	tokenAddress: string,
-	paymasterAddress: string = address.paymaster
+	contract: Contract,
+	methodName: string,
+	paramData: string,
+	paymasterAddress: string = address.paymaster,
 ): Promise<types.Eip712Meta> {
-	const abiCoder = new ethers.utils.AbiCoder();
-	const input = abiCoder.encode([], []);
-
-	// TODO: Estimate gas fee for the transaction
-
-	const eth_fee = BigNumber.from(
-		1000000 * Number(await provider.getGasPrice())
+	const gasPrice = await provider.getGasPrice();
+	
+	const paramsForFeeEstimation = utils.getPaymasterParams(
+		paymasterAddress,
+		{
+			type: 'ApprovalBased',
+			minimalAllowance: ethers.BigNumber.from('1'),
+			token: tokenAddress,
+			innerInput: new Uint8Array(),
+		}
 	);
 
-	const token_fee = BigNumber.from(Number(eth_fee || BigNumber.from(0)) * 1.5);
+	// Estimate gasLimit via paymaster
+	const gasLimit = await contract.estimateGas[methodName](
+		paramData,
+		{
+			customData: {
+				gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+				paymasterParams: paramsForFeeEstimation,
+			}
+		}
+	)
 
-	console.log(
-		'Token Fees',
-		ethers.utils.formatEther(eth_fee),
-		ethers.utils.formatEther(token_fee)
-	);
+	const fee = gasPrice.mul(gasLimit);
+	console.log('Fee', ethers.utils.formatEther(fee));
 
 	const paymasterParams = utils.getPaymasterParams(paymasterAddress, {
 		type: 'ApprovalBased',
 		token: tokenAddress,
-		minimalAllowance: token_fee,
-		innerInput: input,
+		minimalAllowance: fee,
+		innerInput: new Uint8Array(),
 	});
 
-	const customData: types.Eip712Meta = {
+	return {
 		gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
 		paymasterParams: paymasterParams,
 	};
-
-	return customData;
 }
 
 export async function getCustomData(
