@@ -18,7 +18,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		provider
 	);
 
-	// reward Contract
+	// RewardToken Contract
 	const rewardTokenArtifact = await deployer.loadArtifact('RewardToken');
 	const rewardToken = new Contract(
 		address.rewardtoken,
@@ -30,15 +30,20 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		'ACC reward token balance:',
 		ethers.utils.formatEther(rewardTokenBalance)
 	);
-
+	// User Info
 	const userInfo = await masterChef.userInfo(0, address.account);
-	const poolInfo = await masterChef.poolInfo(0);
-	const pendingReward = await masterChef.pendingRewardToken(0, address.account);
+	const [amount, rewardDebt] = userInfo;
 
+	// Pool Info
+	const poolInfo = await masterChef.poolInfo(0);
 	const [lpToken, allocPoint, lastRewardBlock, accRewardTokenPerShare] =
 		poolInfo;
 
-	const [amount, rewardDebt] = userInfo;
+	// Pending Rewards
+	const pendingReward = await masterChef.pendingRewardToken(0, address.account);
+
+	// Pool length
+	const poolLength = await masterChef.poolLength();
 
 	console.log('=============================================');
 	console.log('Pool info:');
@@ -46,6 +51,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('allocPoint:', allocPoint.toString());
 	console.log('lastRewardBlock:', lastRewardBlock.toString());
 	console.log('accRewardTokenPerShare:', accRewardTokenPerShare.toString());
+	console.log('pool length:', poolLength.toString());
 	console.log('=============================================');
 	console.log('User Info:');
 	console.log('amount:', amount.toString());

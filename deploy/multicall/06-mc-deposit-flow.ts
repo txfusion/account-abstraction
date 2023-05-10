@@ -72,6 +72,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		'Account LP Token Balance after minting:',
 		ethers.utils.formatEther(lpTokenBalanceAfterMinting)
 	);
+	console.log('=============================================');
 
 	// Approve Smart Account's LP tokens  for MasterChef to spend
 	const approveLpTokenTx = await lpToken.populateTransaction.approve(
