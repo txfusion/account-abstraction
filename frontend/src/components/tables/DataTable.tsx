@@ -8,17 +8,17 @@ import {
   SortingState,
   getSortedRowModel,
   FilterFn,
-  getFilteredRowModel
+  getFilteredRowModel,
+  ColumnDef
 } from "@tanstack/react-table";
 
 import {
   rankItem,
 } from '@tanstack/match-sorter-utils'
-import { ColumnDefExtended } from "@/libs/poolsTable";
 
 export type DataTableProps<Data extends object> = {
   data: Data[];
-  columns: ColumnDefExtended<Data, any>[];
+  columns: ColumnDef<Data, any>[];
   globalFilter?: string
   setGlobalFilterState?: any
 };

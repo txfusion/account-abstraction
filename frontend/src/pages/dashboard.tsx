@@ -3,14 +3,14 @@ import {
   useAccount,
 } from "wagmi";
 import { Box, Flex, useDisclosure } from "@chakra-ui/react";
-import AccountManagmentModal from "@/components/AccountManagmentModal";
 import { PurpleButton } from "@/components/buttons/PurpleButton";
 import { PurpleInput } from "@/components/inputs/PurpleInput";
 import { connectAccount, createAccount, disconectAccount } from "@/libs/accountManagment";
 import { AccountButton } from "@/components/buttons/AccountButton";
-import { columns } from "../libs/poolsTable"
-import { DataTable } from "@/components/DataTable";
+import { columns } from "../components/tables/PoolsTableConfig"
 import { SearchIcon } from "@chakra-ui/icons";
+import AccountManagmentModal from "@/components/modals/AccountManagmentModal";
+import { DataTable } from "@/components/tables/DataTable";
 
 
 function Dashboard() {
@@ -25,7 +25,7 @@ function Dashboard() {
 
   useEffect(() => {
     setLoading(true);
-    fetch('/api/pools')
+    fetch('/api/pools/all')
       .then((res) => res.json())
       .then((data) => {
         setData(data);
@@ -75,7 +75,7 @@ function Dashboard() {
           pt="2"
           pb="10">
           <PurpleInput
-            icon={<SearchIcon color="white"/>}
+            iconLeft={<SearchIcon color="white"/>}
             text={""}
             w="20%"
             placeHolder="Search"

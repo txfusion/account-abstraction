@@ -1,4 +1,4 @@
-import { Box, FormLabel, Input, InputGroup, InputLeftElement, Text } from "@chakra-ui/react";
+import { Box, FormLabel, Input, InputGroup, InputLeftElement, InputRightElement, Text } from "@chakra-ui/react";
 import React from "react";
 
 type Props = {
@@ -8,11 +8,12 @@ type Props = {
   w?: string
   h?: string
   m?: string
-  size?:string
-  icon?: JSX.Element
+  size?: string
+  iconRight?: JSX.Element
+  iconLeft?: JSX.Element
 }
 
-export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, icon }: Props) {
+export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, iconRight, iconLeft }: Props) {
   return (
     <>
       <Box
@@ -27,10 +28,10 @@ export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, icon }
             {text}
           </Text>
         </FormLabel>
-        <InputGroup size={size}>
-          {icon ? <InputLeftElement
-            pointerEvents='none'
-            children={icon}
+        <InputGroup
+          size={size}>
+          {iconLeft ? <InputLeftElement
+            children={iconLeft}
           /> : null}
           <Input
             border="0.06rem"
@@ -40,7 +41,10 @@ export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, icon }
             borderRadius="3xl"
             placeholder={placeHolder}
             textColor="white"
-            onChange={e => { setValue(e.currentTarget.value);}}/>
+            onChange={e => { setValue(e.currentTarget.value); }} />
+          {iconRight ? <InputRightElement
+            children={iconRight}
+          /> : null}
         </InputGroup>
       </Box>
     </>

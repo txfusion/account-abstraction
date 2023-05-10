@@ -8,6 +8,8 @@ import { NavBar } from "../components/NavBar";
 import defaultChains from "../libs/chains"
 import '../styles/globals.css';
 import Footer from "@/components/Footer";
+import { Provider } from 'react-redux';
+import store from '../redux/store';
 
 const { chains, provider } = configureChains(
   defaultChains,
@@ -55,13 +57,15 @@ function App({ Component, pageProps }) {
         borderRadius: 'large',
       })} modalSize="compact" coolMode={true}>
         <ChakraProvider theme={theme}>
-          <NavBar/>
-          <main>
-            <Component {...pageProps}/>
-          </main>
-          <footer className="footer">
-            <Footer/>
-          </footer>
+          <Provider store={store}>
+            <NavBar />
+            <main>
+              <Component {...pageProps} />
+            </main>
+            <footer className="footer">
+              <Footer />
+            </footer>
+          </Provider>
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>

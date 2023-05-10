@@ -1,10 +1,23 @@
-import { ColumnDef, RowData, createColumnHelper } from "@tanstack/react-table";
-import { Pool } from "./types";
-import { Box, HStack, Image } from "@chakra-ui/react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Pool } from "../../libs/types";
+import { Box, HStack, Image, useDisclosure } from "@chakra-ui/react";
 import { PurpleButton } from "@/components/buttons/PurpleButton";
+import DepositModal from "../modals/DepositModal";
 
 const DepositAction = ({ getValue, row, column, table }) => {
-  return (<PurpleButton text={"Deposit"} onClick={null} attributes={row.id} closeClick={null} />);
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+  return (
+    <>
+      <DepositModal
+        data={row.original}
+        isOpen={isOpen}
+        onClose={onClose}/>
+      <PurpleButton
+        text={"Deposit"}
+        onClick={onOpen}/>
+    </>
+  );
 }
 
 const MergePictureWithName = ({ getValue, row, column, table }) => {
@@ -21,14 +34,11 @@ const MergePictureWithName = ({ getValue, row, column, table }) => {
       <Box>
         {getValue()}
       </Box>
-    </HStack>);
+    </HStack>
+  );
 }
 
 const columnHelper = createColumnHelper<Pool>();
-
-export type ColumnDefExtended<TData extends RowData, TValue = unknown> = ColumnDef<TData, TValue> & {
-  isImage?: boolean,
-}
 
 export const columns = [
   columnHelper.accessor("name", {
@@ -39,7 +49,7 @@ export const columns = [
     header: "Symbol",
   }),
   columnHelper.display({
-    id: "edit",
+    id: "deposit",
     cell: DepositAction,
   }),
 ];
