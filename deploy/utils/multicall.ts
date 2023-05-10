@@ -65,30 +65,24 @@ export async function getApprovalBasedPaymasterData(
 	contract: Contract,
 	methodName: string,
 	paramData: string,
-	paymasterAddress: string = address.paymaster,
+	paymasterAddress: string = address.paymaster
 ): Promise<types.Eip712Meta> {
 	const gasPrice = await provider.getGasPrice();
-	
-	const paramsForFeeEstimation = utils.getPaymasterParams(
-		paymasterAddress,
-		{
-			type: 'ApprovalBased',
-			minimalAllowance: ethers.BigNumber.from('1'),
-			token: tokenAddress,
-			innerInput: new Uint8Array(),
-		}
-	);
+
+	const paramsForFeeEstimation = utils.getPaymasterParams(paymasterAddress, {
+		type: 'ApprovalBased',
+		minimalAllowance: ethers.BigNumber.from('1'),
+		token: tokenAddress,
+		innerInput: new Uint8Array(),
+	});
 
 	// Estimate gasLimit via paymaster
-	const gasLimit = await contract.estimateGas[methodName](
-		paramData,
-		{
-			customData: {
-				gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-				paymasterParams: paramsForFeeEstimation,
-			}
-		}
-	)
+	const gasLimit = await contract.estimateGas[methodName](paramData, {
+		customData: {
+			gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+			paymasterParams: paramsForFeeEstimation,
+		},
+	});
 
 	const fee = gasPrice.mul(gasLimit);
 	console.log('Fee', ethers.utils.formatEther(fee));
@@ -142,22 +136,6 @@ export async function getCustomData(
 	};
 
 	return customData;
-}
-
-export async function getTxWithApproval(
-	tx: any,
-	tokenAddress: string,
-	contractInterface: ethers.ContractInterface,
-	amount: BigNumber,
-	signer: ethers.providers.Provider | ethers.Signer
-) {
-	const tokenContract = new Contract(tokenAddress, contractInterface, signer);
-	const approveTx = await tokenContract.populateTransaction.approve(
-		address.spender,
-		amount
-	);
-
-	return await constructBatchedCalldata([approveTx, tx]);
 }
 
 export async function getEIP712TxRequest(
