@@ -1,9 +1,9 @@
+'use client';
 import { useState } from 'react';
 import { Flex, ModalBody, FormControl, Text, Image } from '@chakra-ui/react';
 import { PurpleInput } from '../inputs/PurpleInput';
 import { PurpleButton } from '../buttons/PurpleButton';
 import GrayModal from './GrayModal';
-import { Pool } from '@/libs/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/redux/cart.slice';
 
@@ -16,7 +16,9 @@ type Props = {
 export default function DepositModal({ isOpen, onClose, data }: Props) {
 	const [ammount, setAmmount] = useState(0);
 	const dispatch = useDispatch();
+
 	const Icon = data.lpTokenIcon;
+
 	return (
 		<>
 			<GrayModal isOpen={isOpen} onClose={onClose} header={'Deposit'}>
@@ -24,7 +26,7 @@ export default function DepositModal({ isOpen, onClose, data }: Props) {
 					<FormControl>
 						<PurpleInput
 							size='lg'
-							iconLeft={<Icon />}
+							iconLeft={<div>{Icon && <Icon />}</div>}
 							iconRight={
 								<Text me='5' textColor='white' size='xs'>
 									{data.lpTokenSymbol}
