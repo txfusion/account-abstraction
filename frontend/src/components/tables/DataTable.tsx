@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Table, Thead, Tbody, Tr, Th, Td, chakra, HStack, Image, Box } from "@chakra-ui/react";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { SearchIcon, TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import {
   useReactTable,
   flexRender,
@@ -15,6 +15,7 @@ import {
 import {
   rankItem,
 } from '@tanstack/match-sorter-utils'
+import { PurpleInput } from "../inputs/PurpleInput";
 
 export type DataTableProps<Data extends object> = {
   data: Data[];
@@ -61,6 +62,15 @@ export function DataTable<Data extends object>({
   });
 
   return (
+    <>
+    <PurpleInput
+    iconLeft={<SearchIcon color="white" />}
+    text={""}
+    w="30%"
+    placeHolder="Search"
+    value={globalFilter}
+    m="1"
+    setValue={setGlobalFilterState} />
     <Table p={2}>
       <Thead>
         {table.getHeaderGroups().map((headerGroup) => (
@@ -121,5 +131,6 @@ export function DataTable<Data extends object>({
         }
       </Tbody>
     </Table>
+    </>
   );
 }

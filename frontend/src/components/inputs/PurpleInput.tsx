@@ -5,6 +5,7 @@ type Props = {
   text: String,
   placeHolder: string,
   setValue: any
+  value?: any
   w?: string
   h?: string
   m?: string
@@ -13,7 +14,7 @@ type Props = {
   iconLeft?: JSX.Element
 }
 
-export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, iconRight, iconLeft }: Props) {
+export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, iconRight, iconLeft, value }: Props) {
   return (
     <>
       <Box
@@ -41,6 +42,7 @@ export function PurpleInput({ text, setValue, placeHolder, w, h, m, size, iconRi
             borderRadius="3xl"
             placeholder={placeHolder}
             textColor="white"
+            value={value}
             onChange={e => { setValue(e.currentTarget.value); }} />
           {iconRight ? <InputRightElement
             children={iconRight}

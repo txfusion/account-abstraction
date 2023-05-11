@@ -4,11 +4,9 @@ import {
 } from "wagmi";
 import { Box, Text, Grid, GridItem, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, useDisclosure, VStack } from "@chakra-ui/react";
 import { PurpleButton } from "@/components/buttons/PurpleButton";
-import { PurpleInput } from "@/components/inputs/PurpleInput";
 import { connectAccount, createAccount, disconectAccount } from "@/libs/accountManagment";
 import { AccountButton } from "@/components/buttons/AccountButton";
 import { depositColumns } from "../components/tables/DepositTableConfig"
-import { SearchIcon } from "@chakra-ui/icons";
 import AccountManagmentModal from "@/components/modals/AccountManagmentModal";
 import { DataTable } from "@/components/tables/DataTable";
 import { withdrawColumns } from "@/components/tables/WithdrawTableConfig";
@@ -51,15 +49,20 @@ function Dashboard() {
             variant="unstyled"
             colorScheme="black">
             <TabList>
-              <Tab textColor="system-purple.500">Deposit</Tab>
-              <Tab textColor="system-purple.500">Withdraw</Tab>
+              <Tab
+                textColor="system-purple.500">
+                Deposit
+              </Tab>
+              <Tab
+                textColor="system-purple.500">
+                Withdraw
+              </Tab>
             </TabList>
             <TabIndicator
               mt="-5.5px"
               height="2px"
               bg="system-purple.500"
-              borderRadius="1px"
-            />
+              borderRadius="1px" />
             <TabPanels>
               <TabPanel>
                 <Box
@@ -77,13 +80,6 @@ function Dashboard() {
                     borderRadius="2xl"
                     pt="2"
                     pb="10">
-                    <PurpleInput
-                      iconLeft={<SearchIcon color="white" />}
-                      text={""}
-                      w="30%"
-                      placeHolder="Search"
-                      m="1"
-                      setValue={setGlobalFilterState} />
                     <DataTable
                       columns={depositColumns}
                       data={data}
@@ -93,7 +89,7 @@ function Dashboard() {
                 </Box>
               </TabPanel>
               <TabPanel>
-              <Box
+                <Box
                   p={5}
                   justifyItems="center"
                   border="0.1rem"
@@ -108,20 +104,13 @@ function Dashboard() {
                     borderRadius="2xl"
                     pt="2"
                     pb="10">
-                    <PurpleInput
-                      iconLeft={<SearchIcon color="white" />}
-                      text={""}
-                      w="30%"
-                      placeHolder="Search"
-                      m="1"
-                      setValue={setGlobalFilterState} />
                     <DataTable
                       columns={withdrawColumns}
                       data={data}
                       globalFilter={globalFilter}
                       setGlobalFilterState={setGlobalFilterState} />
                   </Box>
-                  </Box>
+                </Box>
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -133,15 +122,17 @@ function Dashboard() {
             {!connected ?
               <PurpleButton
                 onClick={onOpen}
-                text={"Account Managment"} />
+                text={"Smart Account"} />
               :
               <AccountButton
                 disconnect={disconectAccount}
                 setConnected={setConnected} />
             }
             <Text
-              mb="2"
-              textColor="white">
+              mt="1%"
+              textColor="white"
+              borderBottom="solid"
+              borderColor="system-purple.500">
               Configure Smart Account and use Depoist/Withdrow!
             </Text>
           </VStack>
