@@ -4,7 +4,7 @@ import { Box, HStack, Image, useDisclosure } from '@chakra-ui/react';
 import { PurpleButton } from '@/components/buttons/PurpleButton';
 import DepositModal from '../modals/DepositModal';
 
-const DepositAction = ({ getValue, row, column, table }) => {
+const DepositAction = ({ getValue, row, column, table }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	return (
@@ -26,21 +26,20 @@ const MergePictureWithName = ({ getValue, row, column, table }: any) => {
 	);
 };
 
-const columnHelper = createColumnHelper<Pool>();
+const columnHelper = createColumnHelper<any>();
 
 export const depositColumns = [
-	columnHelper.accessor('logoURI', {
+	columnHelper.accessor('lpTokenIcon', {
 		header: '',
-		cell: ({ row }) => (
-			<Box borderColor='system-purple.500' border='0.2rem'>
-				<Image boxSize='50px' src={row.original.logoURI} alt='Image' />
-			</Box>
-		),
+		cell: ({ row }) => {
+			const Icon = row.original.lpTokenIcon;
+			return <Icon />;
+		},
 	}),
-	columnHelper.accessor('name', {
+	columnHelper.accessor('lpTokenName', {
 		header: 'Name',
 	}),
-	columnHelper.accessor('symbol', {
+	columnHelper.accessor('lpTokenSymbol', {
 		header: 'Symbol',
 	}),
 	columnHelper.display({

@@ -50,7 +50,7 @@ export function DataTable<Data extends object>({
 	setGlobalFilterState,
 }: DataTableProps<Data>) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
-
+	console.log('deposit: ', data);
 	const table = useReactTable({
 		columns,
 		data,
