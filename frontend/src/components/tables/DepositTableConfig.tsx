@@ -40,7 +40,7 @@ const MergePictureWithName = ({ getValue, row, column, table }) => {
 
 const columnHelper = createColumnHelper<Pool>();
 
-export const columns = [
+export const depositColumns = [
   columnHelper.accessor("name", {
     header: "Name",
     cell: MergePictureWithName

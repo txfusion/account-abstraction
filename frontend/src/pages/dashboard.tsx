@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import {
   useAccount,
 } from "wagmi";
-import { Box, Flex, useDisclosure } from "@chakra-ui/react";
+import { Box, Text, Grid, GridItem, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, useDisclosure, VStack } from "@chakra-ui/react";
 import { PurpleButton } from "@/components/buttons/PurpleButton";
 import { PurpleInput } from "@/components/inputs/PurpleInput";
 import { connectAccount, createAccount, disconectAccount } from "@/libs/accountManagment";
 import { AccountButton } from "@/components/buttons/AccountButton";
-import { columns } from "../components/tables/PoolsTableConfig"
+import { depositColumns } from "../components/tables/DepositTableConfig"
 import { SearchIcon } from "@chakra-ui/icons";
 import AccountManagmentModal from "@/components/modals/AccountManagmentModal";
 import { DataTable } from "@/components/tables/DataTable";
+import { withdrawColumns } from "@/components/tables/WithdrawTableConfig";
 
 
 function Dashboard() {
@@ -43,51 +44,123 @@ function Dashboard() {
         onClose={onClose}
         setConnected={setConnected}
         connectAccount={connectAccount}
-        createAccount={createAccount}/>
-      <Box
-        ms="25%"
-        p={5}
-        justifyItems="center"
-        justifySelf="center"
-        border="0.1rem"
-        backgroundColor="black"
-        borderStyle="solid"
-        borderColor="system-purple.500"
-        borderRadius="3xl"
-        w="50%">
-        <Flex>
-          {!connected ?
-            <PurpleButton
-              onClick={onOpen}
-              text={"Account Managment"} />
-            :
-            <AccountButton
-              disconnect={disconectAccount}
-              setConnected={setConnected} />
-          }
-        </Flex>
-        <Box
-          backgroundColor="system-gray.900"
-          borderStyle="solid"
-          border="0.4rem"
-          borderRadius="2xl"
-          mt="10"
-          pt="2"
-          pb="10">
-          <PurpleInput
-            iconLeft={<SearchIcon color="white"/>}
-            text={""}
-            w="20%"
-            placeHolder="Search"
-            m="1"
-            setValue={setGlobalFilterState}/>
-          <DataTable
-            columns={columns}
-            data={data}
-            globalFilter={globalFilter}
-            setGlobalFilterState={setGlobalFilterState}/>
-        </Box>
-      </Box>
+        createAccount={createAccount} />
+      <Grid gap={6} ms="10%" me="10%" templateColumns='repeat(2, 1fr)'>
+        <GridItem>
+          <Tabs
+            variant="unstyled"
+            colorScheme="black">
+            <TabList>
+              <Tab textColor="system-purple.500">Deposit</Tab>
+              <Tab textColor="system-purple.500">Withdraw</Tab>
+            </TabList>
+            <TabIndicator
+              mt="-5.5px"
+              height="2px"
+              bg="system-purple.500"
+              borderRadius="1px"
+            />
+            <TabPanels>
+              <TabPanel>
+                <Box
+                  p={5}
+                  justifyItems="center"
+                  border="0.1rem"
+                  backgroundColor="black"
+                  borderStyle="solid"
+                  borderColor="system-purple.500"
+                  borderRadius="3xl">
+                  <Box
+                    backgroundColor="system-gray.900"
+                    borderStyle="solid"
+                    border="0.4rem"
+                    borderRadius="2xl"
+                    pt="2"
+                    pb="10">
+                    <PurpleInput
+                      iconLeft={<SearchIcon color="white" />}
+                      text={""}
+                      w="30%"
+                      placeHolder="Search"
+                      m="1"
+                      setValue={setGlobalFilterState} />
+                    <DataTable
+                      columns={depositColumns}
+                      data={data}
+                      globalFilter={globalFilter}
+                      setGlobalFilterState={setGlobalFilterState} />
+                  </Box>
+                </Box>
+              </TabPanel>
+              <TabPanel>
+              <Box
+                  p={5}
+                  justifyItems="center"
+                  border="0.1rem"
+                  backgroundColor="black"
+                  borderStyle="solid"
+                  borderColor="system-purple.500"
+                  borderRadius="3xl">
+                  <Box
+                    backgroundColor="system-gray.900"
+                    borderStyle="solid"
+                    border="0.4rem"
+                    borderRadius="2xl"
+                    pt="2"
+                    pb="10">
+                    <PurpleInput
+                      iconLeft={<SearchIcon color="white" />}
+                      text={""}
+                      w="30%"
+                      placeHolder="Search"
+                      m="1"
+                      setValue={setGlobalFilterState} />
+                    <DataTable
+                      columns={withdrawColumns}
+                      data={data}
+                      globalFilter={globalFilter}
+                      setGlobalFilterState={setGlobalFilterState} />
+                  </Box>
+                  </Box>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </GridItem>
+        <GridItem w="50%">
+          <VStack
+            p={5}
+            justifyItems="center">
+            {!connected ?
+              <PurpleButton
+                onClick={onOpen}
+                text={"Account Managment"} />
+              :
+              <AccountButton
+                disconnect={disconectAccount}
+                setConnected={setConnected} />
+            }
+            <Text
+              mb="2"
+              textColor="white">
+              Configure Smart Account and use Depoist/Withdrow!
+            </Text>
+          </VStack>
+          <Box
+            mt="10%"
+            p={5}
+            justifyItems="center"
+            border="0.1rem"
+            backgroundColor="black"
+            borderStyle="solid"
+            borderColor="system-purple.500"
+            borderRadius="3xl">
+            <Text mb="2"
+              textColor="white">
+              Something here!
+            </Text>
+          </Box>
+        </GridItem>
+      </Grid>
     </>
   );
 }
