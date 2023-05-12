@@ -1,5 +1,7 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
+
 import {
 	Box,
 	Text,
@@ -28,15 +30,21 @@ import { withdrawColumns } from '@/components/tables/WithdrawTableConfig';
 import { masterChefDetails } from '@/components/masterChef';
 
 function Dashboard() {
-	let { isConnected } = useAccount();
+	let { isConnected, connector } = useAccount();
 	let [connected, setConnected] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [globalFilter, setGlobalFilterState] = useState('');
 
 	const [data, setData] = useState(null);
 	const [isLoading, setLoading] = useState(false);
+	const [sig, setSigner] = useState(false);
 
+	const getSigner = async () => {
+		const a = await connector?.getSigner();
+		setSigner(a);
+	};
 	useEffect(() => {
+		getSigner();
 		setLoading(true);
 		fetch('/api/pools/all')
 			.then((res) => res.json())
@@ -46,6 +54,7 @@ function Dashboard() {
 			});
 	}, []);
 
+	console.log(sig);
 	if (isLoading) return <p>Loading...</p>;
 	if (!data) return <p>No profile data</p>;
 
