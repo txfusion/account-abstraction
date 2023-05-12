@@ -35,6 +35,7 @@ export async function getApprovalBasedPaymasterData(
 		innerInput: new Uint8Array(),
 	});
 
+	console.log('BEFORE GAS LIMIT');
 	// Estimate gasLimit via paymaster
 	const gasLimit = await contract.estimateGas[methodName](paramData, {
 		customData: {
@@ -42,6 +43,8 @@ export async function getApprovalBasedPaymasterData(
 			paymasterParams: paramsForFeeEstimation,
 		},
 	});
+
+	console.log('GAS LIMIT', gasLimit);
 
 	const fee = gasPrice.mul(gasLimit);
 	console.log('Fee', ethers.utils.formatEther(fee));

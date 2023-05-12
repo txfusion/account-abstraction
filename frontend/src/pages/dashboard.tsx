@@ -27,6 +27,8 @@ import AccountManagmentModal from '@/components/modals/AccountManagmentModal';
 import { DataTable } from '@/components/tables/DataTable';
 import { withdrawColumns } from '@/components/tables/WithdrawTableConfig';
 import { masterChefDetails } from '@/components/masterChef';
+import { useBalance } from 'wagmi';
+import { address } from '@/libs/address';
 
 function Dashboard() {
 	let { isConnected, connector } = useAccount();
@@ -38,6 +40,12 @@ function Dashboard() {
 	const [isLoading, setLoading] = useState(false);
 	const [sig, setSigner] = useState(false);
 
+	const { data: tokenBalance } = useBalance({
+		address: address.account as `0x${string}`,
+		token: address.lptoken as `0x${string}`,
+	});
+
+	console.log('Token Balance', tokenBalance);
 	const getSigner = async () => {
 		const a = await connector?.getSigner();
 		setSigner(a);

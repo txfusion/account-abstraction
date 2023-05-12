@@ -1,20 +1,9 @@
 'use client';
-import { useState } from 'react';
-import { Flex, ModalBody, FormControl, Text, Image } from '@chakra-ui/react';
-import { PurpleInput } from '../inputs/PurpleInput';
-import { PurpleButton } from '../buttons/PurpleButton';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAccount } from 'wagmi';
-import { Contract } from 'zksync-web3';
-import { address } from '@/libs/address';
-import { abi } from '@/web3/services/abi';
-import { ethers } from 'ethers';
-import {
-	batchTransactionsAdded,
-	selectAll,
-	selectTransactions,
-} from '@/redux/transactions.slice';
+import { useSelector } from 'react-redux';
+import { selectTransactions } from '@/redux/transactions.slice';
 import GrayModal from '../modals/GrayModal';
+import { ModalBody, Text, Button } from '@chakra-ui/react';
+import useSubmitBatchTx from '@/hooks/useSubmitBatchTx';
 
 interface ITransactionsModal {
 	isOpen: any;
@@ -26,6 +15,17 @@ export default function TransactionsModal({
 	onClose,
 }: ITransactionsModal) {
 	const pendingTransactions = useSelector(selectTransactions.selectAll);
+	const { submitBatchTxs, error, loading } = useSubmitBatchTx({
+		transactions: pendingTransactions,
+	});
+
+	const onSubmitTxs = async () => {
+		const tx = await submitBatchTxs();
+		const txWait = await tx.wait();
+		console.log('Status', txWait.status);
+	};
+
+	const noPendingTransactions = pendingTransactions.length === 0;
 	return (
 		<>
 			<GrayModal
@@ -57,7 +57,6 @@ export default function TransactionsModal({
 										},
 										index
 									) => {
-										const isLastItem = index === pendingTransactions.length - 1;
 										return (
 											<tr
 												key={transactionId}
@@ -84,9 +83,19 @@ export default function TransactionsModal({
 							</tbody>
 						</table>
 
-						<PurpleButton
-							text='Submit all transactions'
-							onClick={() => {}}></PurpleButton>
+						{noPendingTransactions && (
+							<p className='text-white'>No Pending Transactions</p>
+						)}
+
+						<Button
+							disabled={noPendingTransactions}
+							colorScheme='system-purple'
+							onClick={submitBatchTxs}
+							borderRadius='xl'>
+							<Text color='white' fontSize='sm'>
+								Submit all transactions
+							</Text>
+						</Button>
 					</div>
 				</ModalBody>
 			</GrayModal>

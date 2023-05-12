@@ -9,7 +9,7 @@ const FUNCT_NAME = {
 	APPROVE: 'APPROVE',
 } as const;
 
-interface TransactionType {
+export interface TransactionType {
 	transactionId: string | number;
 	fromAddress: string;
 	toAddress: string;

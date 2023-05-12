@@ -6,7 +6,7 @@ import { PurpleButton } from '../buttons/PurpleButton';
 import GrayModal from './GrayModal';
 import { useDispatch } from 'react-redux';
 import { useAccount } from 'wagmi';
-import { Contract } from 'zksync-web3';
+import { Contract, Signer, Web3Provider } from 'zksync-web3';
 import { address } from '@/libs/address';
 import { abi } from '@/web3/services/abi';
 import { ethers } from 'ethers';
@@ -23,15 +23,26 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 	const dispatch = useDispatch();
 
 	const [amount, setAmount] = useState(0);
-	console.log(data);
+
+	const getSigner = (): Signer => {
+		let signer: any;
+		if (typeof window !== 'undefined') {
+			signer = new Web3Provider((window as any).ethereum).getSigner();
+		}
+		return signer;
+	};
 
 	// IT IS HARDCODED FOR NOW
 	const createTransaction = async () => {
 		// SIGNER might not necessary for now
 		const signer = await connector?.getSigner();
 
-		const masterChef = new Contract(address.masterchef, abi.masterchef, signer);
-		const lpToken = new Contract(address.lptoken, abi.erc20, signer);
+		const masterChef = new Contract(
+			address.masterchef,
+			abi.masterchef,
+			getSigner()
+		);
+		const lpToken = new Contract(address.lptoken, abi.erc20, getSigner());
 		const tokenAmount = amount;
 		// poolId and amount
 
@@ -88,12 +99,15 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 							setValue={setAmount}
 							text={'Amount'}
 						/>
+						<p className='text-red-400/50'>
+							All transaction costs will be paid in USDC
+						</p>
+
 						<Flex alignItems='center' mt={2}>
 							<PurpleButton
-								// onClick={() => dispatch(addToCart({ item: data, amount }))}
 								onClick={createTransaction}
 								closeClick={onClose}
-								text={'Add to Cart'}
+								text={'Add to pending transactions'}
 							/>
 						</Flex>
 					</FormControl>
