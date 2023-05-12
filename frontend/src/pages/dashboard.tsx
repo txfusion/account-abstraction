@@ -66,106 +66,113 @@ function Dashboard() {
 				connectAccount={connectAccount}
 				createAccount={createAccount}
 			/>
-			<Grid gap={6} ms='10%' me='10%' templateColumns='repeat(2, 1fr)'>
-				<GridItem>
-					<Tabs variant='unstyled' colorScheme='black'>
-						<TabList>
-							<Tab textColor='system-purple.500'>Deposit</Tab>
-							<Tab textColor='system-purple.500'>Withdraw</Tab>
-						</TabList>
-						<TabIndicator
-							mt='-5.5px'
-							height='2px'
-							bg='system-purple.500'
-							borderRadius='1px'
-						/>
-						<TabPanels>
-							<TabPanel>
-								<Box
-									p={5}
-									justifyItems='center'
-									border='0.1rem'
-									backgroundColor='black'
-									borderStyle='solid'
-									borderColor='system-purple.500'
-									borderRadius='3xl'>
-									<Box
-										backgroundColor='system-gray.900'
-										borderStyle='solid'
-										border='0.4rem'
-										borderRadius='2xl'
-										pt='2'
-										pb='10'>
-										<DataTable
-											columns={depositColumns}
-											data={masterChefDetails.pools}
-											globalFilter={globalFilter}
-											setGlobalFilterState={setGlobalFilterState}
-										/>
-									</Box>
-								</Box>
-							</TabPanel>
-							<TabPanel>
-								<Box
-									p={5}
-									justifyItems='center'
-									border='0.1rem'
-									backgroundColor='black'
-									borderStyle='solid'
-									borderColor='system-purple.500'
-									borderRadius='3xl'>
-									<Box
-										backgroundColor='system-gray.900'
-										borderStyle='solid'
-										border='0.4rem'
-										borderRadius='2xl'
-										pt='2'
-										pb='10'>
-										<DataTable
-											columns={withdrawColumns}
-											data={data}
-											globalFilter={globalFilter}
-											setGlobalFilterState={setGlobalFilterState}
-										/>
-									</Box>
-								</Box>
-							</TabPanel>
-						</TabPanels>
-					</Tabs>
-				</GridItem>
-				<GridItem w='50%'>
-					<VStack p={5} justifyItems='center'>
-						{!connected ? (
-							<PurpleButton onClick={onOpen} text={'Smart Account'} />
-						) : (
-							<AccountButton
-								disconnect={disconectAccount}
-								setConnected={setConnected}
+			<div className='w-full'>
+				<div className='w-full max-w-screen-lg mx-auto'>
+					<div className='flex'>
+						<Tabs variant='unstyled' colorScheme='black ' className='w-full'>
+							<TabList>
+								<Tab textColor='system-purple.500'>Deposit</Tab>
+								<Tab textColor='system-purple.500'>Withdraw</Tab>
+							</TabList>
+							<TabIndicator
+								mt='-5.5px'
+								height='2px'
+								bg='system-purple.500'
+								borderRadius='1px'
 							/>
-						)}
-						<Text
-							mt='1%'
-							textColor='white'
-							borderBottom='solid'
-							borderColor='system-purple.500'>
-							Configure Smart Account and use Depoist/Withdrow!
-						</Text>
-					</VStack>
-					<Box
-						mt='10%'
-						p={5}
-						justifyItems='center'
-						border='0.1rem'
-						backgroundColor='black'
-						borderStyle='solid'
-						borderColor='system-purple.500'
-						borderRadius='3xl'>
-						<Text mb='2' textColor='white'>
-							Something here!
-						</Text>
-					</Box>
-				</GridItem>
-			</Grid>
+							<div className='flex flex-row gap-4 mt-4'>
+								<TabPanels>
+									<TabPanel p={0}>
+										<Box
+											justifyItems='center'
+											backgroundColor='black'
+											borderStyle='solid'
+											borderColor='system-purple.500'
+											borderRadius='3xl'>
+											<Box
+												backgroundColor='system-gray.900'
+												borderStyle='solid'
+												border='0.1rem'
+												borderRadius='2xl'
+												pt='2'
+												pb='10'>
+												<DataTable
+													columns={depositColumns}
+													data={masterChefDetails.pools}
+													globalFilter={globalFilter}
+													setGlobalFilterState={setGlobalFilterState}
+												/>
+											</Box>
+										</Box>
+									</TabPanel>
+									<TabPanel p={0}>
+										<Box
+											justifyItems='center'
+											backgroundColor='black'
+											borderStyle='solid'
+											borderColor='system-purple.500'
+											borderRadius='3xl'>
+											<Box
+												backgroundColor='system-gray.900'
+												borderStyle='solid'
+												border='0.4rem'
+												borderRadius='2xl'
+												pt='2'
+												pb='10'>
+												<DataTable
+													columns={withdrawColumns}
+													data={data}
+													globalFilter={globalFilter}
+													setGlobalFilterState={setGlobalFilterState}
+												/>
+											</Box>
+										</Box>
+									</TabPanel>
+								</TabPanels>
+
+								<Box
+									backgroundColor='system-gray.900'
+									borderRadius='2xl'
+									p={5}
+									height='fit-content'>
+									<div>
+										<div className='flex flex-col gap-6'>
+											<p className='font-semibold text-white '>
+												Make sure you connect with Smart Account before making
+												transactions!
+											</p>
+											{!connected ? (
+												<PurpleButton
+													onClick={onOpen}
+													text={'Connect with Smart Account'}
+												/>
+											) : (
+												<AccountButton
+													disconnect={disconectAccount}
+													setConnected={setConnected}
+												/>
+											)}
+										</div>
+										{/* <Box
+											mt='10%'
+											p={5}
+											justifyItems='center'
+											border='0.1rem'
+											backgroundColor='black'
+											borderStyle='solid'
+											borderColor='system-purple.500'
+											borderRadius='3xl'>
+											<Text mb='2' textColor='white'>
+												Something here!
+											</Text>
+										</Box> */}
+									</div>
+								</Box>
+							</div>
+						</Tabs>
+					</div>
+				</div>
+			</div>
 		</>
 	);
 }
