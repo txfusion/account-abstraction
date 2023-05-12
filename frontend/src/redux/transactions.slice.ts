@@ -4,13 +4,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { BigNumber, ethers } from 'ethers';
 import { RootState } from './store';
 
+const FUNCT_NAME = {
+	DEPOSIT: 'DEPOSIT',
+	APPROVE: 'APPROVE',
+} as const;
+
 interface TransactionType {
 	transactionId: string | number;
-	from: string;
-	to: string;
-	tokenAmount: BigNumber | number;
-	value?: BigNumber | number;
+	fromAddress: string;
+	toAddress: string;
+	toName: string;
+	tokenAmount: number;
+	value?: number;
 	txCalldata: ethers.PopulatedTransaction;
+	functionName?: keyof typeof FUNCT_NAME;
 }
 
 const transactionsAdapter = createEntityAdapter<TransactionType>({
@@ -59,3 +66,5 @@ export const { transactionAdded, transactionRemoved, batchTransactionsAdded } =
 export const selectTransactions = transactionsAdapter.getSelectors<RootState>(
 	(state) => state.transactions
 );
+
+export const { selectAll } = selectTransactions;

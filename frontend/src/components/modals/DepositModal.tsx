@@ -23,6 +23,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 	const dispatch = useDispatch();
 
 	const [amount, setAmount] = useState(0);
+	console.log(data);
 
 	// IT IS HARDCODED FOR NOW
 	const createTransaction = async () => {
@@ -44,22 +45,28 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 			ethers.utils.parseEther(tokenAmount.toString())
 		);
 
-		const transactions = [
-			{
-				from: address.account,
-				to: address.lptoken,
-				tokenAmount,
-				txCalldata: transactionCallData,
-			},
-			{
-				from: address.account,
-				to: address.masterchef,
-				tokenAmount,
-				txCalldata: approveCallData,
-			},
-		];
-
-		dispatch(batchTransactionsAdded(transactions));
+		dispatch(
+			batchTransactionsAdded([
+				{
+					fromAddress: address.account,
+					toAddress: address.lptoken,
+					toName: data.lpTokenName,
+					tokenAmount,
+					value: 0,
+					txCalldata: transactionCallData,
+					functionName: 'APPROVE',
+				},
+				{
+					fromAddress: address.account,
+					toAddress: address.masterchef,
+					toName: data.yieldFarmName,
+					tokenAmount,
+					value: 0,
+					txCalldata: approveCallData,
+					functionName: 'DEPOSIT',
+				},
+			])
+		);
 	};
 
 	const Icon = data.lpTokenIcon;
