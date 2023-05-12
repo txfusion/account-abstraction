@@ -1,4 +1,8 @@
 
+import { deployAccount } from '@/web3/services/deployAccount';
+
+
+
 type ConnectAccountProps = {
   setConnected: any;
   adressValue: any;
@@ -6,6 +10,12 @@ type ConnectAccountProps = {
 
 type DisconectAccountProps = {
   setConnected: any;
+};
+
+type CreateAccountProps = {
+  setConnected: any;
+  sig: any
+  ownerAddress: string
 };
 
 export function connectAccount({ adressValue, setConnected }: ConnectAccountProps) {
@@ -16,5 +26,7 @@ export function disconectAccount({ setConnected }: DisconectAccountProps) {
   setConnected(false)
 }
 
-export function createAccount() {
+export function createAccount({setConnected, sig, ownerAddress}: CreateAccountProps) {
+    let smartAccountAddress = deployAccount(sig, ownerAddress);
+    setConnected(true)
 }
