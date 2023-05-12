@@ -8,7 +8,10 @@ const reducer = {
 };
 
 const store = configureStore({
+	devTools: true,
+
 	reducer,
 });
 
 export default store;
+export type RootState = ReturnType<typeof store.getState>;

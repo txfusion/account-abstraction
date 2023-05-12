@@ -1,6 +1,8 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
 import { BigNumber, ethers } from 'ethers';
+import { RootState } from './store';
 
 interface TransactionType {
 	transactionId: string | number;
@@ -21,28 +23,39 @@ const transactionSlice = createSlice({
 	reducers: {
 		// Can pass adapter functions directly as case reducers.  Because we're passing this
 		// as a value, `createSlice` will auto-generate the `bookAdded` action type / creator
-		transactionAdded: transactionsAdapter.addOne,
+		transactionAdded: {
+			reducer: transactionsAdapter.addOne,
+			prepare: (payload: Omit<TransactionType, 'transactionId'>) => {
+				const id = uuidv4();
+				return {
+					payload: { ...payload, transactionId: id },
+				};
+			},
+		},
+		batchTransactionsAdded: {
+			reducer: transactionsAdapter.addMany,
+			prepare: (payload: Omit<TransactionType, 'transactionId'>[]) => {
+				const txsWithUniqueIds = payload.map((transaction) => {
+					return {
+						...transaction,
+						transactionId: uuidv4(),
+					};
+				});
+
+				return {
+					payload: txsWithUniqueIds,
+				};
+			},
+		},
 		transactionRemoved: transactionsAdapter.removeOne,
 	},
 });
 
-// const transactionSlie = createSlice({
-// 	name: 'transactions',
-// 	initialState: [],
-// 	reducers: {
-// 		addToCart: (state, action) => {
-// 			state.push({ ...action.payload, ammount: action.payload.ammount });
-// 		},
-// 		removeFromCart: (state, action) => {
-// 			const index = state.findIndex(
-// 				(data) => data.item.symbol == action.payload.item.symbol
-// 			);
-// 			state.splice(index, 1);
-// 		},
-// 	},
-// });
-
 export const transactionsReducer = transactionSlice.reducer;
 
-export const { transactionAdded, transactionRemoved } =
+export const { transactionAdded, transactionRemoved, batchTransactionsAdded } =
 	transactionSlice.actions;
+
+export const selectTransactions = transactionsAdapter.getSelectors<RootState>(
+	(state) => state.transactions
+);
