@@ -5,8 +5,9 @@ import {
 } from "@chakra-ui/react";
 import { PurpleInput } from "../inputs/PurpleInput";
 import { PurpleButton } from "../buttons/PurpleButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GrayModal from "./GrayModal";
+import { useAccount } from "wagmi";
 
 type Props = {
   setConnected: any;
@@ -19,6 +20,19 @@ type Props = {
 export default function AccountManagmentModal({ isOpen, onClose, connectAccount, createAccount, setConnected }: Props) {
 
   const [adressValue, setAddressValue] = useState('');
+  const [sig, setSigner] = useState();
+
+  let { isConnected, connector, address } = useAccount();
+
+	const getSigner = async () => {
+		const a = await connector?.getSigner();
+		setSigner(a);
+	};
+
+  useEffect(() => {
+    getSigner();
+  }, []
+);
 
   return (
     <>
@@ -52,6 +66,7 @@ export default function AccountManagmentModal({ isOpen, onClose, connectAccount,
             mt={2}>
             <PurpleButton
               onClick={createAccount}
+              attributes={{ setConnected, sig, "ownerAddress" : address }}
               closeClick={onClose}
               text={"Create Account"} />
           </Flex>
