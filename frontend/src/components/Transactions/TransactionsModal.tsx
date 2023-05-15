@@ -15,17 +15,16 @@ export default function TransactionsModal({
 	onClose,
 }: ITransactionsModal) {
 	const pendingTransactions = useSelector(selectTransactions.selectAll);
-	const { submitBatchTxs, error, loading } = useSubmitBatchTx({
+	const {
+		submitBatchTxs,
+		error: errorMessage,
+		loading,
+	} = useSubmitBatchTx({
 		transactions: pendingTransactions,
 	});
 
-	const onSubmitTxs = async () => {
-		const tx = await submitBatchTxs();
-		const txWait = await tx.wait();
-		console.log('Status', txWait.status);
-	};
+	const noPendingTransactions: Boolean = pendingTransactions.length === 0;
 
-	const noPendingTransactions = pendingTransactions.length === 0;
 	return (
 		<>
 			<GrayModal
@@ -86,9 +85,10 @@ export default function TransactionsModal({
 						{noPendingTransactions && (
 							<p className='text-white'>No Pending Transactions</p>
 						)}
+						{errorMessage && <p className='text-red-100'>{errorMessage}</p>}
 
 						<Button
-							disabled={noPendingTransactions}
+							disabled={noPendingTransactions as boolean}
 							colorScheme='system-purple'
 							onClick={submitBatchTxs}
 							borderRadius='xl'>

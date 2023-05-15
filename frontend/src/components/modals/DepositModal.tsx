@@ -22,7 +22,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 	const { isConnected, connector } = useAccount();
 	const dispatch = useDispatch();
 
-	const [amount, setAmount] = useState(0);
+	const [amount, setAmount] = useState<number>(0);
 
 	const getSigner = (): Signer => {
 		let signer: any;
@@ -34,26 +34,22 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 
 	// IT IS HARDCODED FOR NOW
 	const createTransaction = async () => {
-		// SIGNER might not necessary for now
-		const signer = await connector?.getSigner();
-
 		const masterChef = new Contract(
 			address.masterchef,
 			abi.masterchef,
 			getSigner()
 		);
 		const lpToken = new Contract(address.lptoken, abi.erc20, getSigner());
-		const tokenAmount = amount;
 		// poolId and amount
 
 		const approveCallData = await lpToken.populateTransaction.approve(
 			address.masterchef,
-			ethers.utils.parseEther(tokenAmount.toString())
+			ethers.utils.parseEther(amount.toString())
 		);
 		// poolId and amount
 		const transactionCallData = await masterChef.populateTransaction.deposit(
 			0,
-			ethers.utils.parseEther(tokenAmount.toString())
+			ethers.utils.parseEther(amount.toString())
 		);
 
 		dispatch(
@@ -62,7 +58,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 					fromAddress: address.account,
 					toAddress: address.lptoken,
 					toName: data.lpTokenName,
-					tokenAmount,
+					tokenAmount: amount,
 					value: 0,
 					txCalldata: transactionCallData,
 					functionName: 'APPROVE',
@@ -71,7 +67,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 					fromAddress: address.account,
 					toAddress: address.masterchef,
 					toName: data.yieldFarmName,
-					tokenAmount,
+					tokenAmount: amount,
 					value: 0,
 					txCalldata: approveCallData,
 					functionName: 'DEPOSIT',

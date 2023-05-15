@@ -34,7 +34,7 @@ interface IUseSubmitBatchTxReturn {
 const useSubmitBatchTx = ({
 	transactions,
 }: IUseSubmitBatchTx): IUseSubmitBatchTxReturn => {
-	const { connector } = useAccount();
+	const { address: signerAddress } = useAccount();
 
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
@@ -58,11 +58,14 @@ const useSubmitBatchTx = ({
 	const submitBatchTxs = async () => {
 		if (noTransactions) {
 			setError('No Pending Transactions');
+			return;
 		}
-		const provider = await getFallbackProvider();
+		if (!signerAddress) {
+			setError('Please connect with you wallet!');
+			return;
+		}
 
 		setLoading(true);
-		let tx: types.TransactionRequest;
 		try {
 			const accountContract = new Contract(
 				address.account,

@@ -3,9 +3,6 @@ import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import {
 	Box,
-	Text,
-	Grid,
-	GridItem,
 	Tab,
 	TabIndicator,
 	TabList,
@@ -31,7 +28,7 @@ import { useBalance } from 'wagmi';
 import { address } from '@/libs/address';
 
 function Dashboard() {
-	let { isConnected, connector } = useAccount();
+	let { connector } = useAccount();
 	let [connected, setConnected] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [globalFilter, setGlobalFilterState] = useState('');
@@ -46,6 +43,7 @@ function Dashboard() {
 	});
 
 	console.log('Token Balance', tokenBalance);
+
 	const getSigner = async () => {
 		const a = await connector?.getSigner();
 		setSigner(a);
@@ -160,19 +158,6 @@ function Dashboard() {
 												/>
 											)}
 										</div>
-										{/* <Box
-											mt='10%'
-											p={5}
-											justifyItems='center'
-											border='0.1rem'
-											backgroundColor='black'
-											borderStyle='solid'
-											borderColor='system-purple.500'
-											borderRadius='3xl'>
-											<Text mb='2' textColor='white'>
-												Something here!
-											</Text>
-										</Box> */}
 									</div>
 								</Box>
 							</div>

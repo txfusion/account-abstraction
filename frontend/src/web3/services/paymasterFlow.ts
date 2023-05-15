@@ -1,5 +1,5 @@
 import { address } from '@/libs/address';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { types, utils, Provider, Contract } from 'zksync-web3';
 
 export async function getGeneralFlowPaymasterData(
@@ -26,33 +26,38 @@ export async function getApprovalBasedPaymasterData(
 	paramData: string,
 	paymasterAddress: string = address.paymaster
 ): Promise<types.Eip712Meta> {
-	const gasPrice = await provider.getGasPrice();
+	// const gasPrice = await provider.getGasPrice();
 
-	const paramsForFeeEstimation = utils.getPaymasterParams(paymasterAddress, {
-		type: 'ApprovalBased',
-		minimalAllowance: ethers.BigNumber.from('1'),
-		token: tokenAddress,
-		innerInput: new Uint8Array(),
-	});
+	// const paramsForFeeEstimation = utils.getPaymasterParams(paymasterAddress, {
+	// 	type: 'ApprovalBased',
+	// 	minimalAllowance: ethers.BigNumber.from('1'),
+	// 	token: tokenAddress,
+	// 	innerInput: new Uint8Array(),
+	// });
 
 	console.log('BEFORE GAS LIMIT');
 	// Estimate gasLimit via paymaster
-	const gasLimit = await contract.estimateGas[methodName](paramData, {
-		customData: {
-			gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-			paymasterParams: paramsForFeeEstimation,
-		},
-	});
+	// const gasLimit = await contract.estimateGas[methodName](paramData, {
+	// 	customData: {
+	// 		gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+	// 		paymasterParams: paramsForFeeEstimation,
+	// 	},
+	// });
 
-	console.log('GAS LIMIT', gasLimit);
+	// console.log('GAS LIMIT', gasLimit);
 
-	const fee = gasPrice.mul(gasLimit);
-	console.log('Fee', ethers.utils.formatEther(fee));
+	// const fee = gasPrice.mul(gasLimit);
+
+	const eth_fee = BigNumber.from(
+		1000000 * Number(await provider.getGasPrice())
+	);
+	const token_fee = BigNumber.from(Number(eth_fee || BigNumber.from(0)) * 1.5);
+	console.log('TOken fee', token_fee);
 
 	const paymasterParams = utils.getPaymasterParams(paymasterAddress, {
 		type: 'ApprovalBased',
 		token: tokenAddress,
-		minimalAllowance: fee,
+		minimalAllowance: token_fee,
 		innerInput: new Uint8Array(),
 	});
 
