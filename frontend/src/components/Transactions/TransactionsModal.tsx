@@ -12,7 +12,6 @@ import {
 	Alert,
 	AlertIcon,
 	AlertTitle,
-	AlertDescription,
 } from '@chakra-ui/react';
 import useSubmitBatchTx from '@/hooks/useSubmitBatchTx';
 import { useEffect, useState } from 'react';
@@ -51,8 +50,6 @@ export default function TransactionsModal({
 			setSuccessMessage('Batch Transactions Successful!');
 			clearAllTxs();
 		}
-
-		console.log('rec', receipt);
 	};
 
 	const clearAllTxs = () => {

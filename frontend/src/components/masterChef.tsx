@@ -27,7 +27,7 @@ export const masterChefDetails = {
 			poolId: 1,
 			yieldFarmAddress: '0x88E6157DB8c42c7569cC61139E6777971f4De181',
 			yieldFarmName: 'YieldFarm',
-			lpToken: '0xb960B59212E2e8518Cb9a7a53CF1845A83dB0931',
+			lpToken: '0x678286CF32866dC1f62901a3B84E3E9E00FDe1E6',
 			lpTokenName: 'StakePlus',
 			lpTokenSymbol: 'STP',
 			lpTokenIcon: StakePlusIcon,

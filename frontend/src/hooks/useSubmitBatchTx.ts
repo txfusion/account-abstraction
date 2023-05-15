@@ -124,7 +124,6 @@ const useSubmitBatchTx = ({
 				setSuccess('Transaction successful!');
 			}
 
-			console.log(receipt);
 			return receipt;
 			// return await provider.sendTransaction(utils.serialize(tx));
 		} catch (e: unknown) {

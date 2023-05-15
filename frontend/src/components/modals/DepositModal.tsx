@@ -60,6 +60,8 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 			address.masterchef,
 			ethers.utils.parseEther(amount.toString())
 		);
+		// ethers.BigNumber.from(amount)
+		// .add(ethers.BigNumber.from(1))
 		// poolId and amount
 		const transactionCallData = await masterChef.populateTransaction.deposit(
 			data.poolId,
@@ -74,7 +76,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 					toName: data.lpTokenName,
 					tokenAmount: amount,
 					value: 0,
-					txCalldata: transactionCallData,
+					txCalldata: approveCallData,
 					functionName: 'APPROVE',
 				},
 				{
@@ -83,7 +85,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 					toName: data.yieldFarmName,
 					tokenAmount: amount,
 					value: 0,
-					txCalldata: approveCallData,
+					txCalldata: transactionCallData,
 					functionName: 'DEPOSIT',
 				},
 			])
