@@ -1,5 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
+<<<<<<< Updated upstream
+=======
+import { useAccount, useBalance } from 'wagmi';
+>>>>>>> Stashed changes
 import {
 	Box,
 	Tab,
@@ -17,7 +21,6 @@ import AccountManagmentModal from '@/components/modals/AccountManagmentModal';
 import { DataTable } from '@/components/tables/DataTable';
 import { withdrawColumns } from '@/components/tables/WithdrawTableConfig';
 import { masterChefDetails } from '@/components/masterChef';
-import { useBalance } from 'wagmi';
 import { address } from '@/libs/address';
 import { useSelector } from 'react-redux';
 import { smartAccount } from '@/redux/account.slice';
@@ -33,6 +36,12 @@ function Dashboard() {
 	const { data: tokenBalance } = useBalance({
 		address: address.account as `0x${string}`,
 		token: address.lptoken as `0x${string}`,
+		watch: true,
+	});
+	const { data: usdcBalance } = useBalance({
+		address: address.account as `0x${string}`,
+		token: address.usdc as `0x${string}`,
+		watch: true,
 	});
 
 	console.log('Token Balance', tokenBalance);
@@ -87,6 +96,7 @@ function Dashboard() {
 												pt='2'
 												pb='10'>
 												<DataTable
+													headerTitle='Deposit'
 													columns={depositColumns}
 													data={masterChefDetails.pools}
 													globalFilter={globalFilter}
@@ -110,6 +120,7 @@ function Dashboard() {
 												pt='2'
 												pb='10'>
 												<DataTable
+													headerTitle='Withdraw'
 													columns={withdrawColumns}
 													data={data}
 													globalFilter={globalFilter}
@@ -138,6 +149,16 @@ function Dashboard() {
 												/>
 											) : (
 												<AccountButton/>
+											)}
+											{connected && (
+												<div className='flex flex-col'>
+													<p className='text-white '>
+														Smart Account USDC balance:
+													</p>
+													<p className='text-white/50 '>
+														{usdcBalance?.formatted}
+													</p>
+												</div>
 											)}
 										</div>
 									</div>

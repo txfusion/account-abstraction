@@ -10,7 +10,7 @@ import { getEIP712TxRequest } from '@/web3/services/getEIP712Tx';
 import { getFallbackProvider } from '@/web3/services/getFallbackProvider';
 import { getApprovalBasedPaymasterData } from '@/web3/services/paymasterFlow';
 import { ethers } from 'ethers';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import {
 	Contract,
@@ -27,6 +27,7 @@ interface IUseSubmitBatchTx {
 
 interface IUseSubmitBatchTxReturn {
 	error: string;
+	success: string;
 	loading: boolean;
 	submitBatchTxs: () => any;
 }
@@ -38,17 +39,33 @@ const useSubmitBatchTx = ({
 
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
+	const [success, setSuccess] = useState<string>('');
 
 	const noTransactions = transactions.length === 0;
 
-	// batch transactions
+	useEffect(() => {
+		console.log('unmount');
+		setError('');
+		setSuccess('');
+	}, [transactions]);
 
-	const getSigner = (): Signer => {
+	// batch transactions
+	const getSigner = async (): Promise<Signer> => {
 		let signer: any;
 		if (typeof window !== 'undefined') {
 			signer = new Web3Provider((window as any).ethereum).getSigner();
 		}
 		return signer;
+	};
+
+	// lets try this again
+	// batch transactions
+	const getProvider = async (): Promise<Provider> => {
+		let provider: any;
+		if (typeof window !== 'undefined') {
+			provider = new Provider((window as any).ethereum);
+		}
+		return provider;
 	};
 
 	const getTxsCalldata = () => {
@@ -66,18 +83,22 @@ const useSubmitBatchTx = ({
 		}
 
 		setLoading(true);
+		setError('');
+		setSuccess('');
 		try {
 			const accountContract = new Contract(
 				address.account,
 				abi.account,
-				getSigner()
+				await getSigner()
 			);
 
-			const prov = getSigner().provider;
+			const provider = await getFallbackProvider();
+			// const provider = await getProvider();
+
 			const txs = getTxsCalldata();
 			const multiTxCalldata = await constructBatchedCalldata(txs);
 			const paymasterData = await getApprovalBasedPaymasterData(
-				prov,
+				provider,
 				address.usdc,
 				accountContract,
 				'multicall',
@@ -86,25 +107,33 @@ const useSubmitBatchTx = ({
 			);
 
 			let tx: types.TransactionRequest = await getEIP712TxRequest(
-				prov,
+				provider,
 				address.account,
 				address.account,
 				multiTxCalldata,
 				paymasterData
 			);
 
-			tx = await addSignature(tx, getSigner());
+			tx = await addSignature(tx, await getSigner());
 
-			return await prov.sendTransaction(utils.serialize(tx));
-		} catch (e: any) {
-			setError(e);
-			throw new Error(e);
+			const receipt = await (
+				await provider.sendTransaction(utils.serialize(tx))
+			).wait();
+			if (receipt.status === 1) {
+				setSuccess('Transaction successful!');
+			}
+
+			console.log(receipt);
+
+			// return await provider.sendTransaction(utils.serialize(tx));
+		} catch (e: unknown) {
+			throw new Error(e as string);
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	return { submitBatchTxs, error, loading };
+	return { submitBatchTxs, error, loading, success };
 };
 
 export default useSubmitBatchTx;

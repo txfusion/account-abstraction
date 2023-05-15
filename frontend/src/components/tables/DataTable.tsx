@@ -7,9 +7,7 @@ import {
 	Th,
 	Td,
 	chakra,
-	HStack,
-	Image,
-	Box,
+	Text,
 } from '@chakra-ui/react';
 import { SearchIcon, TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import {
@@ -31,6 +29,7 @@ export type DataTableProps<Data extends object> = {
 	columns: ColumnDef<Data, any>[];
 	globalFilter?: string;
 	setGlobalFilterState?: any;
+	headerTitle: string;
 };
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -48,6 +47,7 @@ export function DataTable<Data extends object>({
 	columns,
 	globalFilter,
 	setGlobalFilterState,
+	headerTitle,
 }: DataTableProps<Data>) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -71,15 +71,19 @@ export function DataTable<Data extends object>({
 
 	return (
 		<>
-			<PurpleInput
-				iconLeft={<SearchIcon color='white' />}
-				text={''}
-				w='30%'
-				placeHolder='Search'
-				value={globalFilter}
-				m='1'
-				setValue={setGlobalFilterState}
-			/>
+			<div className='flex flex-row items-center justify-between px-4'>
+				<Text color='white' fontSize='2xl' fontWeight='semibold'>
+					{headerTitle}
+				</Text>
+				<PurpleInput
+					iconLeft={<SearchIcon color='white' />}
+					text={''}
+					w='30%'
+					placeHolder='Search'
+					value={globalFilter}
+					setValue={setGlobalFilterState}
+				/>
+			</div>
 			<Table p={2}>
 				<Thead>
 					{table.getHeaderGroups().map((headerGroup) => (
