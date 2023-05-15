@@ -18,23 +18,33 @@ type Props = {
 
 export default function AccountManagmentModal({ isOpen, onClose }: Props) {
 
-  const [adressValue, setAddressValue] = useState('');
+  const [adressValue, setAddressValue] = useState(' ');
 
   let { address } = useAccount();
   const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingCreate, setLoadingCreate] = useState<boolean>(false);
+  const [loadingConnect, setLoadingConnect] = useState<boolean>(false);
 
-  const createAccount = async (ownerAddress: string) => {
-    setLoading(true);
+  const createAccount = async () => {
+    setLoadingCreate(true);
     try {
-    let smartAccountAdress = await deployAccount(ownerAddress);
-    setLoading(false);
+    let smartAccountAdress = await deployAccount(address);
+    setLoadingCreate(false);
     dispatch(connectSmartAccount({connected: true, accountAddress: smartAccountAdress }));
+    onClose();
     } catch(e) {
-      setLoading(false);
+      setLoadingCreate(false);
       console.log(e)
     }
+  };
+  
+  const connectAccount = () => {
+    setLoadingConnect(true);
+    console.log(adressValue);
+    dispatch(connectSmartAccount({connected: true, accountAddress: adressValue}));
+    setLoadingConnect(false);
+    onClose();
   };
 
   return (
@@ -55,9 +65,9 @@ export default function AccountManagmentModal({ isOpen, onClose }: Props) {
               mt={2}
               mb={4}>
               <PurpleButton
-                onClick={null}
-                closeClick={onClose}
-                attributes={{ adressValue }}
+                isLoading={loadingConnect}
+                onClick={connectAccount}
+                //closeClick={onClose}
                 text={"Connect"} />
             </Flex>
           </FormControl>
@@ -68,9 +78,8 @@ export default function AccountManagmentModal({ isOpen, onClose }: Props) {
             alignItems="center"
             mt={2}>
             <PurpleButton
-              isLoading={loading}
+              isLoading={loadingCreate}
               onClick={createAccount}
-              attributes={{ "ownerAddress": address }}
               //closeClick={onClose}
               text={"Create Account"} />
           </Flex>

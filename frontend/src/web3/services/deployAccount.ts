@@ -8,10 +8,10 @@ import { getFallbackProvider } from './getFallbackProvider';
 
   
 export async function deployAccount(
-	addressOwner: string,
+	addressOwner: string | undefined,
 ): Promise<string> {
 	const provider = await getFallbackProvider();
-	const wallet = new Wallet(rich_wallet[8].privateKey, provider);
+	const wallet = new Wallet(rich_wallet[7].privateKey, provider);
 	const contract = new Contract(address.accountfactory, abi.accountfactory, wallet);
 	const tx = await (await contract.deployAccount(constants.HashZero, wallet.address)).wait()
 	const accAddress = (await utils.getDeployedContracts(tx))[0].deployedAddress
