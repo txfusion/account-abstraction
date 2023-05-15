@@ -1,17 +1,12 @@
 import '@matterlabs/hardhat-zksync-deploy';
 import '@matterlabs/hardhat-zksync-solc';
 
-// local testnet
-const zkSyncLocalTestnet = {
-	url: 'http://localhost:3050',
-	ethNetwork: 'http://localhost:8545',
-	zksync: true,
-};
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-// testnet
-const zkSyncTestnet = {
-	url: 'https://zksync2-testnet.zksync.dev',
-	ethNetwork: 'process.env.alchemy_api_goerli',
+const zkSyncNetwork = {
+	url: process.env.ZK_PROVIDER_URL,
+	ethNetwork: process.env.ETH_NETWORK_URL,
 	zksync: true,
 };
 
@@ -23,18 +18,13 @@ const compilers = [
 
 module.exports = {
 	zksolc: {
-		version: '1.3.9',
+		version: '1.3.10',
 		compilerSource: 'binary',
 		settings: {
 			isSystem: true,
 		},
 	},
-	defaultNetwork: 'zkSyncTestnet',
-
-	networks: {
-		zkSyncTestnet: zkSyncLocalTestnet,
-	},
-	solidity: {
-		compilers: compilers,
-	},
+	defaultNetwork: 'zkSyncNetwork',
+	networks: { zkSyncNetwork },
+	solidity: { compilers },
 };
