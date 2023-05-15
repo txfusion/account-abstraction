@@ -1,9 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-<<<<<<< Updated upstream
-=======
-import { useAccount, useBalance } from 'wagmi';
->>>>>>> Stashed changes
+
 import {
 	Box,
 	Tab,
@@ -24,9 +21,11 @@ import { masterChefDetails } from '@/components/masterChef';
 import { address } from '@/libs/address';
 import { useSelector } from 'react-redux';
 import { smartAccount } from '@/redux/account.slice';
+import { useBalance } from 'wagmi';
 
 function Dashboard() {
-	let  { connected } = useSelector(smartAccount);
+	const { connected } = useSelector(smartAccount);
+
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [globalFilter, setGlobalFilterState] = useState('');
 
@@ -61,10 +60,7 @@ function Dashboard() {
 
 	return (
 		<>
-			<AccountManagmentModal
-				isOpen={isOpen}
-				onClose={onClose}
-			/>
+			<AccountManagmentModal isOpen={isOpen} onClose={onClose} />
 			<div className='w-full'>
 				<div className='w-full max-w-screen-lg mx-auto'>
 					<div className='flex'>
@@ -148,7 +144,7 @@ function Dashboard() {
 													text={'Connect with Smart Account'}
 												/>
 											) : (
-												<AccountButton/>
+												<AccountButton />
 											)}
 											{connected && (
 												<div className='flex flex-col'>

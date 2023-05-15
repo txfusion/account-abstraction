@@ -4,7 +4,7 @@ import { accountReducer } from './account.slice';
 
 const reducer = {
 	transactions: transactionsReducer,
-	account: accountReducer
+	account: accountReducer,
 };
 
 const store = configureStore({
