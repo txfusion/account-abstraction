@@ -24,7 +24,7 @@ import { smartAccount } from '@/redux/account.slice';
 import { useBalance } from 'wagmi';
 
 function Dashboard() {
-	const { connected } = useSelector(smartAccount);
+	const { connected, accountAddress } = useSelector(smartAccount);
 
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [globalFilter, setGlobalFilterState] = useState('');
@@ -32,6 +32,11 @@ function Dashboard() {
 	const [data, setData] = useState(null);
 	const [isLoading, setLoading] = useState(false);
 
+	const { data: tokenBalance } = useBalance({
+		address: accountAddress as `0x${string}`,
+		token: address.usdc as `0x${string}`,
+		watch: true,
+	});
 	useEffect(() => {
 		setLoading(true);
 		fetch('/api/pools/all')
@@ -105,7 +110,7 @@ function Dashboard() {
 												<DataTable
 													headerTitle='Withdraw'
 													columns={withdrawColumns}
-													data={data}
+													data={masterChefDetails.pools}
 													globalFilter={globalFilter}
 													setGlobalFilterState={setGlobalFilterState}
 												/>
@@ -133,6 +138,9 @@ function Dashboard() {
 											) : (
 												<AccountButton />
 											)}
+											{/* <div className='text-white'>
+												{tokenBalance?.formatted}
+											</div> */}
 										</div>
 									</div>
 								</Box>

@@ -1,24 +1,17 @@
 'use client';
 import { useState } from 'react';
-import {
-	Flex,
-	ModalBody,
-	FormControl,
-	Text,
-	Image,
-	NumberInput,
-	NumberInputField,
-} from '@chakra-ui/react';
+import { Flex, ModalBody, FormControl, Text } from '@chakra-ui/react';
 import { PurpleInput } from '../inputs/PurpleInput';
 import { PurpleButton } from '../buttons/PurpleButton';
 import GrayModal from './GrayModal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAccount, useBalance } from 'wagmi';
 import { Contract, Signer, Web3Provider } from 'zksync-web3';
 import { address } from '@/libs/address';
 import { abi } from '@/web3/services/abi';
 import { ethers } from 'ethers';
 import { batchTransactionsAdded } from '@/redux/transactions.slice';
+import { smartAccount } from '@/redux/account.slice';
 
 interface IDepositModal {
 	isOpen: any;
@@ -28,12 +21,14 @@ interface IDepositModal {
 
 export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 	const { isConnected, connector } = useAccount();
+	const { accountAddress } = useSelector(smartAccount);
+
 	const dispatch = useDispatch();
 
 	const [amount, setAmount] = useState<number>(0);
 
 	const { data: tokenBalance } = useBalance({
-		address: address.account as `0x${string}`,
+		address: accountAddress as `0x${string}`,
 		token: data.lpToken as `0x${string}`,
 		watch: true,
 	});
@@ -54,14 +49,13 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 			getSigner()
 		);
 		const lpToken = new Contract(data.lpToken, abi.erc20, getSigner());
-		// poolId and amount
 
+		// poolId and amount
 		const approveCallData = await lpToken.populateTransaction.approve(
 			address.masterchef,
 			ethers.utils.parseEther(amount.toString())
 		);
-		// ethers.BigNumber.from(amount)
-		// .add(ethers.BigNumber.from(1))
+
 		// poolId and amount
 		const transactionCallData = await masterChef.populateTransaction.deposit(
 			data.poolId,
@@ -71,7 +65,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 		dispatch(
 			batchTransactionsAdded([
 				{
-					fromAddress: address.account,
+					fromAddress: accountAddress,
 					toAddress: data.lpToken,
 					toName: data.lpTokenName,
 					tokenAmount: amount,
@@ -80,7 +74,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 					functionName: 'APPROVE',
 				},
 				{
-					fromAddress: address.account,
+					fromAddress: accountAddress,
 					toAddress: address.masterchef,
 					toName: data.yieldFarmName,
 					tokenAmount: amount,
