@@ -29,7 +29,9 @@ interface IUseSubmitBatchTxReturn {
 	error: string;
 	success: string;
 	loading: boolean;
-	submitBatchTxs: () => any;
+	submitBatchTxs: () => Promise<
+		ethers.providers.TransactionReceipt | undefined
+	>;
 }
 
 const useSubmitBatchTx = ({
@@ -44,7 +46,6 @@ const useSubmitBatchTx = ({
 	const noTransactions = transactions.length === 0;
 
 	useEffect(() => {
-		console.log('unmount');
 		setError('');
 		setSuccess('');
 	}, [transactions]);
@@ -124,7 +125,7 @@ const useSubmitBatchTx = ({
 			}
 
 			console.log(receipt);
-
+			return receipt;
 			// return await provider.sendTransaction(utils.serialize(tx));
 		} catch (e: unknown) {
 			throw new Error(e as string);

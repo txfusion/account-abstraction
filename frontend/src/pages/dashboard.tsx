@@ -43,8 +43,6 @@ function Dashboard() {
 		watch: true,
 	});
 
-	console.log('Token Balance', tokenBalance);
-
 	useEffect(() => {
 		setLoading(true);
 		fetch('/api/pools/all')

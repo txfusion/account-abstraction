@@ -54,14 +54,19 @@ const transactionSlice = createSlice({
 				};
 			},
 		},
+		removeAllTransactions: transactionsAdapter.removeAll,
 		transactionRemoved: transactionsAdapter.removeOne,
 	},
 });
 
 export const transactionsReducer = transactionSlice.reducer;
 
-export const { transactionAdded, transactionRemoved, batchTransactionsAdded } =
-	transactionSlice.actions;
+export const {
+	transactionAdded,
+	transactionRemoved,
+	batchTransactionsAdded,
+	removeAllTransactions,
+} = transactionSlice.actions;
 
 export const selectTransactions = transactionsAdapter.getSelectors<RootState>(
 	(state) => state.transactions
