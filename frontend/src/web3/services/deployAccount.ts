@@ -1,28 +1,19 @@
-import { Signer, constants } from 'ethers';
-import { Contract, Web3Provider } from 'zksync-web3';
-import { abi } from './abi';
+import { constants } from 'ethers';
+import { Contract, Wallet, utils } from 'zksync-web3';
+import  { abi } from './abi'
 import { address } from '@/libs/address';
+import {rich_wallet} from '../../libs/rich_wallet'
+import { getFallbackProvider } from './getFallbackProvider';
 
-export async function getSigner(): Promise<Signer> {
-	let signer: any;
 
-	if (typeof window !== 'undefined') {
-		signer = new Web3Provider((window as any).ethereum).getSigner();
-	}
-
-	return signer;
-}
-
-export async function deployAccount(addressOwner: string): Promise<String> {
-	const signer = await getSigner();
-	const contract = new Contract(
-		address.accountfactory,
-		abi.accountfactory,
-		signer
-	);
-	let smartAccount = await contract.deployAccount(
-		constants.HashZero,
-		addressOwner
-	);
-	return smartAccount;
+  
+export async function deployAccount(
+	addressOwner: string,
+): Promise<string> {
+	const provider = await getFallbackProvider();
+	const wallet = new Wallet(rich_wallet[8].privateKey, provider);
+	const contract = new Contract(address.accountfactory, abi.accountfactory, wallet);
+	const tx = await (await contract.deployAccount(constants.HashZero, wallet.address)).wait()
+	const accAddress = (await utils.getDeployedContracts(tx))[0].deployedAddress
+	return accAddress;
 }

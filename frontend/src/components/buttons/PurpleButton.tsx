@@ -5,11 +5,13 @@ type Props = {
 	onClick: any;
 	closeClick?: any;
 	attributes?: any;
+	isLoading? :boolean
 };
 
-export function PurpleButton({ onClick, closeClick, text, attributes }: Props) {
+export function PurpleButton({ onClick, closeClick, text, attributes, isLoading }: Props) {
 	return (
 		<Button
+			isLoading={isLoading}
 			colorScheme='system-purple'
 			onClick={() => {
 				onClick(attributes);

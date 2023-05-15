@@ -1,7 +1,7 @@
-import { disconnectSmartAccount } from '@/redux/account.slice';
+import { address } from '@/libs/address';
+import { disconnectSmartAccount, smartAccount } from '@/redux/account.slice';
 import { ChevronDownIcon, CopyIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-	Box,
 	Button,
 	HStack,
 	Menu,
@@ -11,10 +11,23 @@ import {
 	MenuList,
 	Text,
 } from '@chakra-ui/react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useBalance } from 'wagmi';
 
 export function AccountButton() {
 	const dispatch = useDispatch();
+    const { accountAddress } = useSelector(smartAccount);
+
+    const { data: tokenBalance } = useBalance({
+		address: accountAddress as `0x${string}`,
+		token: address.lptoken as `0x${string}`,
+		watch: true,
+	});
+	const { data: usdcBalance } = useBalance({
+		address: accountAddress as `0x${string}`,
+		token: address.usdc as `0x${string}`,
+		watch: true,
+	});
 
 	return (
 		<Menu>
@@ -24,8 +37,8 @@ export function AccountButton() {
 				as={Button}
 				rightIcon={<ChevronDownIcon />}>
 				<HStack>
-					<Text>0 ETH</Text>
-					<Text>0xD3...D2T4</Text>
+					<Text>{usdcBalance?.formatted} USDC</Text>
+					<Text>{accountAddress}</Text>
 				</HStack>
 			</MenuButton>
 			<MenuList
@@ -44,7 +57,7 @@ export function AccountButton() {
 				<MenuDivider />
 				<MenuItem
 					backgroundColor='system-gray.100'
-					onClick={() => navigator.clipboard.writeText('0xD3...32G3')}>
+					onClick={() => navigator.clipboard.writeText(accountAddress)}>
 					<HStack>
 						<CopyIcon color='white' />
 						<Text textColor='white'>Copy Address</Text>

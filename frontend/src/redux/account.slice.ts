@@ -2,17 +2,20 @@ import { SmartAccountType } from '@/libs/types';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from './store';
 
-const initialState = { connected: false, accountAddress: '' };
+const initialState: SmartAccountType = { connected: false, accountAddress: '' };
 
 const accountSlice = createSlice({
 	name: 'account',
 	initialState: initialState,
 	reducers: {
 		connectSmartAccount: (state, action: PayloadAction<SmartAccountType>) => {
-			state = action.payload;
+			console.log(action.payload)
+			state.accountAddress = action.payload.accountAddress;
+			state.connected = true;
 		},
 		disconnectSmartAccount: (state) => {
-			state = initialState;
+			state.connected = false;
+			state.accountAddress = '';
 		},
 	},
 });

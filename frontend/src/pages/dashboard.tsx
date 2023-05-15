@@ -32,17 +32,6 @@ function Dashboard() {
 	const [data, setData] = useState(null);
 	const [isLoading, setLoading] = useState(false);
 
-	const { data: tokenBalance } = useBalance({
-		address: address.account as `0x${string}`,
-		token: address.lptoken as `0x${string}`,
-		watch: true,
-	});
-	const { data: usdcBalance } = useBalance({
-		address: address.account as `0x${string}`,
-		token: address.usdc as `0x${string}`,
-		watch: true,
-	});
-
 	useEffect(() => {
 		setLoading(true);
 		fetch('/api/pools/all')
@@ -143,16 +132,6 @@ function Dashboard() {
 												/>
 											) : (
 												<AccountButton />
-											)}
-											{connected && (
-												<div className='flex flex-col'>
-													<p className='text-white '>
-														Smart Account USDC balance:
-													</p>
-													<p className='text-white/50 '>
-														{usdcBalance?.formatted}
-													</p>
-												</div>
 											)}
 										</div>
 									</div>
