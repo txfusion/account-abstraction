@@ -3,3 +3,8 @@ export type Pool = {
     symbol: string;
     logoURI: string;
 };
+
+export type SmartAccountType = {
+	connected: boolean;
+	accountAddress: string;
+}

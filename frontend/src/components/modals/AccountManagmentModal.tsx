@@ -5,34 +5,20 @@ import {
 } from "@chakra-ui/react";
 import { PurpleInput } from "../inputs/PurpleInput";
 import { PurpleButton } from "../buttons/PurpleButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import GrayModal from "./GrayModal";
 import { useAccount } from "wagmi";
-
+import { deployAccount } from "@/web3/services/deployAccount";
 type Props = {
-  setConnected: any;
-  connectAccount: any;
-  createAccount: any;
   isOpen: any;
   onClose: any;
 };
 
-export default function AccountManagmentModal({ isOpen, onClose, connectAccount, createAccount, setConnected }: Props) {
+export default function AccountManagmentModal({ isOpen, onClose }: Props) {
 
   const [adressValue, setAddressValue] = useState('');
-  const [sig, setSigner] = useState();
 
-  let { isConnected, connector, address } = useAccount();
-
-	const getSigner = async () => {
-		const a = await connector?.getSigner();
-		setSigner(a);
-	};
-
-  useEffect(() => {
-    getSigner();
-  }, []
-);
+  let { address } = useAccount();
 
   return (
     <>
@@ -52,9 +38,9 @@ export default function AccountManagmentModal({ isOpen, onClose, connectAccount,
               mt={2}
               mb={4}>
               <PurpleButton
-                onClick={connectAccount}
+                onClick={null}
                 closeClick={onClose}
-                attributes={{ adressValue, setConnected }}
+                attributes={{ adressValue }}
                 text={"Connect"} />
             </Flex>
           </FormControl>
@@ -65,8 +51,8 @@ export default function AccountManagmentModal({ isOpen, onClose, connectAccount,
             alignItems="center"
             mt={2}>
             <PurpleButton
-              onClick={createAccount}
-              attributes={{ setConnected, sig, "ownerAddress" : address }}
+              onClick={deployAccount}
+              attributes={{"ownerAddress" : address }}
               closeClick={onClose}
               text={"Create Account"} />
           </Flex>

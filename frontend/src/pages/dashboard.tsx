@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
 import {
 	Box,
 	Tab,
@@ -10,14 +9,8 @@ import {
 	TabPanels,
 	Tabs,
 	useDisclosure,
-	VStack,
 } from '@chakra-ui/react';
 import { PurpleButton } from '@/components/buttons/PurpleButton';
-import {
-	connectAccount,
-	createAccount,
-	disconectAccount,
-} from '@/libs/accountManagment';
 import { AccountButton } from '@/components/buttons/AccountButton';
 import { depositColumns } from '../components/tables/DepositTableConfig';
 import AccountManagmentModal from '@/components/modals/AccountManagmentModal';
@@ -26,16 +19,16 @@ import { withdrawColumns } from '@/components/tables/WithdrawTableConfig';
 import { masterChefDetails } from '@/components/masterChef';
 import { useBalance } from 'wagmi';
 import { address } from '@/libs/address';
+import { useSelector } from 'react-redux';
+import { smartAccount } from '@/redux/account.slice';
 
 function Dashboard() {
-	let { connector } = useAccount();
-	let [connected, setConnected] = useState(false);
+	let  { connected } = useSelector(smartAccount);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [globalFilter, setGlobalFilterState] = useState('');
 
 	const [data, setData] = useState(null);
 	const [isLoading, setLoading] = useState(false);
-	const [sig, setSigner] = useState(false);
 
 	const { data: tokenBalance } = useBalance({
 		address: address.account as `0x${string}`,
@@ -44,12 +37,7 @@ function Dashboard() {
 
 	console.log('Token Balance', tokenBalance);
 
-	const getSigner = async () => {
-		const a = await connector?.getSigner();
-		setSigner(a);
-	};
 	useEffect(() => {
-		getSigner();
 		setLoading(true);
 		fetch('/api/pools/all')
 			.then((res) => res.json())
@@ -67,9 +55,6 @@ function Dashboard() {
 			<AccountManagmentModal
 				isOpen={isOpen}
 				onClose={onClose}
-				setConnected={setConnected}
-				connectAccount={connectAccount}
-				createAccount={createAccount}
 			/>
 			<div className='w-full'>
 				<div className='w-full max-w-screen-lg mx-auto'>
@@ -152,10 +137,7 @@ function Dashboard() {
 													text={'Connect with Smart Account'}
 												/>
 											) : (
-												<AccountButton
-													disconnect={disconectAccount}
-													setConnected={setConnected}
-												/>
+												<AccountButton/>
 											)}
 										</div>
 									</div>

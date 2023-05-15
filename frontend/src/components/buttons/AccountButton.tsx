@@ -1,12 +1,11 @@
+import { disconnectSmartAccount } from "@/redux/account.slice";
 import { ChevronDownIcon, CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Button, HStack, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text } from "@chakra-ui/react";
+import { useDispatch } from "react-redux";
 
-type Props = {
-    disconnect: any,
-    setConnected: any
-}
-
-export function AccountButton({ disconnect, setConnected }: Props) {
+export function AccountButton() {
+    const dispatch = useDispatch();
+    
     return (
         <Menu>
             <MenuButton
@@ -30,7 +29,7 @@ export function AccountButton({ disconnect, setConnected }: Props) {
                 borderStyle="solid">
                 <MenuItem
                     backgroundColor="system-gray.100"
-                    onClick={() => disconnect({ setConnected })}>
+                    onClick={() => dispatch(disconnectSmartAccount())}>
                     <HStack>
                         <ExternalLinkIcon
                             color="white" />
