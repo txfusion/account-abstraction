@@ -88,13 +88,14 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 
 	const Icon = data.lpTokenIcon;
 
-	const haveError = tokenBalance ? tokenBalance.value.toNumber() - amount <= 0 : true;
+	const balanceError = tokenBalance ? +((+tokenBalance.formatted).toFixed(2)) - amount <= 0 : true;
+	const amountError = isNaN(amount) || amount < 0;
 
 	return (
 		<>
 			<GrayModal isOpen={isOpen} onClose={onClose} header={'Deposit'}>
 				<ModalBody pb={6}>
-					<FormControl isInvalid={haveError}>
+					<FormControl isInvalid={balanceError || amountError}>
 						{/* <FormControl>
 							<NumberInput max={50} min={10}>
 								<NumberInputField />
@@ -112,9 +113,14 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 							setValue={setAmount}
 							text={'Amount'}
 						/>
-						{haveError && (
+						{balanceError && (
 							<FormErrorMessage>
 								Invalid balance.
+							</FormErrorMessage>
+						)}
+						{amountError && (
+							<FormErrorMessage>
+								Amount need to be positive number.
 							</FormErrorMessage>
 						)}
 						<p className='text-red-400/50'>
@@ -131,7 +137,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 						)}
 						<Flex alignItems='center' mt={2}>
 							<PurpleButton
-								isDisabled={haveError}
+								isDisabled={balanceError || amountError}
 								onClick={createTransaction}
 								closeClick={onClose}
 								text={'Add to pending transactions'}
