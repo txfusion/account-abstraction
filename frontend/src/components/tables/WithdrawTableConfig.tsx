@@ -8,7 +8,6 @@ import { address } from '@/libs/address';
 import { abi } from '@/web3/services/abi';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import { getReward } from '@/web3/services/getReward';
 import { smartAccount } from '@/redux/account.slice';
 import { useSelector } from 'react-redux';
 
@@ -49,12 +48,12 @@ const RewardBalance = ({ getValue, row, column, table }: any) => {
 	useEffect(() => {
 		if (data) {
 			const rewards = ethers.utils.formatEther(data as ethers.BigNumberish);
-			setReward(rewards);
+			setReward((+rewards).toFixed(2));
 		}
 	}, [data, accountAddress]);
 
 	if (reward) {
-		return <p>{reward}</p>;
+		return <p>~{reward}</p>;
 	}
 
 	return <p>-</p>;
