@@ -31,7 +31,7 @@ function Dashboard() {
 		<>
 			<AccountManagmentModal isOpen={isOpen} onClose={onClose} />
 			<div className='w-full'>
-				<div className='w-full max-w-screen-lg mx-auto'>
+				<div className='w-full max-w-screen-xl mx-auto'>
 					<div className='flex'>
 						<Tabs
 							variant='soft-rounded'
@@ -53,12 +53,7 @@ function Dashboard() {
 									Withdraw
 								</Tab>
 							</TabList>
-							{/* <TabIndicator
-								mt='-5.5px'
-								height='2px'
-								bg='system-purple.500'
-								borderRadius='1px'
-							/> */}
+
 							<div className='flex flex-row gap-4 mt-4'>
 								<TabPanels>
 									<TabPanel p={0}>
