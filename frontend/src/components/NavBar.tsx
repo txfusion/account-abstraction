@@ -19,7 +19,7 @@ export const NavBar = () => {
 	};
 
 	return (
-		<>
+		<div className='w-full max-w-screen-xl mx-auto'>
 			<Box
 				// bg='system-purple.500'
 				px={4}>
@@ -61,6 +61,6 @@ export const NavBar = () => {
 					</div>
 				</Flex>
 			</Box>
-		</>
+		</div>
 	);
 };

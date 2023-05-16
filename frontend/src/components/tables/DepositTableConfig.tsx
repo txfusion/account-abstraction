@@ -1,12 +1,12 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { Box, HStack, Image, useDisclosure } from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import { PurpleButton } from '@/components/buttons/PurpleButton';
 import DepositModal from '../modals/DepositModal';
 import { useBalance } from 'wagmi';
 import { smartAccount } from '@/redux/account.slice';
 import { useSelector } from 'react-redux';
 
-const DepositAction = ({ getValue, row, column, table }: any) => {
+const DepositAction = ({ row }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	return (
@@ -16,7 +16,7 @@ const DepositAction = ({ getValue, row, column, table }: any) => {
 		</>
 	);
 };
-const AccountBalance = ({ getValue, row, column, table }: any) => {
+const AccountBalance = ({ row }: any) => {
 	const { accountAddress } = useSelector(smartAccount);
 
 	const { data: tokenBalance } = useBalance({
@@ -24,6 +24,7 @@ const AccountBalance = ({ getValue, row, column, table }: any) => {
 		token: row.original.lpToken as `0x${string}`,
 		watch: true,
 	});
+
 	if (tokenBalance?.formatted) {
 		return <p>~ {(+tokenBalance?.formatted).toFixed(2)}</p>;
 	}

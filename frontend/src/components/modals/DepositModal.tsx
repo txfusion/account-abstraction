@@ -1,6 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { Flex, ModalBody, FormControl, Text, FormHelperText, FormErrorMessage } from '@chakra-ui/react';
+import {
+	Flex,
+	ModalBody,
+	FormControl,
+	Text,
+	FormHelperText,
+	FormErrorMessage,
+} from '@chakra-ui/react';
 import { PurpleInput } from '../inputs/PurpleInput';
 import { PurpleButton } from '../buttons/PurpleButton';
 import GrayModal from './GrayModal';
