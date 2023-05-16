@@ -21,15 +21,11 @@ const DepositAction = ({ getValue, row, column, table }: any) => {
 		</>
 	);
 };
-
-const MergePictureWithName = ({ getValue, row, column, table }: any) => {
+const HarvestAction = ({ getValue, row, column, table }: any) => {
 	return (
-		<HStack spacing={5}>
-			<Box borderColor='system-purple.500' border='0.2rem'>
-				<Image boxSize='50px' src={row.original.logoURI} alt='Image' />
-			</Box>
-			<Box>{getValue()}</Box>
-		</HStack>
+		<>
+			<PurpleButton text={'Harvest'} />
+		</>
 	);
 };
 
@@ -81,7 +77,25 @@ export const withdrawColumns = [
 		cell: RewardBalance,
 	}),
 	columnHelper.display({
+		id: 'harvest',
+		header: () => {
+			return (
+				<button className='w-full text-center border border-white/30 px-1 py-1 rounded-lg hover:bg-white/5 animate-all duration-150'>
+					Harvest All
+				</button>
+			);
+		},
+		cell: HarvestAction,
+	}),
+	columnHelper.display({
 		id: 'deposit',
+		header: () => {
+			return (
+				<button className='w-full text-center border border-white/30 px-1 py-1 rounded-lg hover:bg-white/5 animate-all duration-150'>
+					Withdraw All
+				</button>
+			);
+		},
 		cell: DepositAction,
 	}),
 ];
