@@ -130,7 +130,6 @@ const StakedAmount = ({ row }: any) => {
 
 	useEffect(() => {
 		if (contractData) {
-			console.log(contractData);
 			const rewards = ethers.utils.formatEther(
 				contractData.amount as ethers.BigNumberish
 			);

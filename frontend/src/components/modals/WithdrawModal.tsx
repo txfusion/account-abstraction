@@ -53,7 +53,6 @@ export default function WithdrawModal({
 
 	useEffect(() => {
 		if (contractData) {
-			console.log(contractData);
 			const rewards = ethers.utils.formatEther(
 				contractData.amount as ethers.BigNumberish
 			);
@@ -71,7 +70,7 @@ export default function WithdrawModal({
 
 		// poolId and amount
 		const txCalldata = await masterChef.populateTransaction.withdraw(
-			address.masterchef,
+			data.poolId,
 			ethers.utils.parseEther(amount.toString())
 		);
 

@@ -59,16 +59,6 @@ const useSubmitBatchTx = ({
 		return signer;
 	};
 
-	// lets try this again
-	// batch transactions
-	const getProvider = async (): Promise<Provider> => {
-		let provider: any;
-		if (typeof window !== 'undefined') {
-			provider = new Provider((window as any).ethereum);
-		}
-		return provider;
-	};
-
 	const getTxsCalldata = () => {
 		return transactions.map(({ txCalldata }) => txCalldata);
 	};
@@ -94,9 +84,9 @@ const useSubmitBatchTx = ({
 			);
 
 			const provider = await getFallbackProvider();
-			// const provider = await getProvider();
 
 			const txs = getTxsCalldata();
+
 			const multiTxCalldata = await constructBatchedCalldata(txs);
 			const paymasterData = await getApprovalBasedPaymasterData(
 				provider,
@@ -125,7 +115,6 @@ const useSubmitBatchTx = ({
 			}
 
 			return receipt;
-			// return await provider.sendTransaction(utils.serialize(tx));
 		} catch (e: unknown) {
 			throw new Error(e as string);
 		} finally {
