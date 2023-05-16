@@ -42,7 +42,6 @@ export default function AccountManagmentModal({ isOpen, onClose }: Props) {
 
 	const connectAccount = () => {
 		setLoadingConnect(true);
-		console.log(addressValue);
 		dispatch(
 			connectSmartAccount({ connected: true, accountAddress: addressValue })
 		);

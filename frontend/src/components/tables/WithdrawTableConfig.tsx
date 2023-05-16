@@ -1,6 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { Pool } from '../../libs/types';
-import { Box, HStack, Image, useDisclosure } from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import { PurpleButton } from '@/components/buttons/PurpleButton';
 import DepositModal from '../modals/DepositModal';
 import { useBalance, useContractRead } from 'wagmi';
@@ -33,14 +32,20 @@ const RewardBalance = ({ getValue, row, column, table }: any) => {
 	const [reward, setReward] = useState<string>('');
 	const { accountAddress } = useSelector(smartAccount);
 
-	const { data } = useContractRead({
+	const { data, refetch } = useContractRead({
 		address: address.masterchef as `0x${string}`,
 		abi: abi.masterchef,
 		functionName: 'pendingRewardToken',
 		args: [row.original.poolId, accountAddress],
 		watch: true,
+		enabled: false,
 	});
 
+	useEffect(() => {
+		if (accountAddress) {
+			refetch();
+		}
+	}, [accountAddress]);
 	useEffect(() => {
 		if (data) {
 			const rewards = ethers.utils.formatEther(data as ethers.BigNumberish);
@@ -77,6 +82,11 @@ export const withdrawColumns = [
 		cell: RewardBalance,
 	}),
 	columnHelper.display({
+		id: 'withdraw',
+
+		cell: DepositAction,
+	}),
+	columnHelper.display({
 		id: 'harvest',
 		header: () => {
 			return (
@@ -86,16 +96,5 @@ export const withdrawColumns = [
 			);
 		},
 		cell: HarvestAction,
-	}),
-	columnHelper.display({
-		id: 'deposit',
-		header: () => {
-			return (
-				<button className='w-full text-center border border-white/30 px-1 py-1 rounded-lg hover:bg-white/5 animate-all duration-150'>
-					Withdraw All
-				</button>
-			);
-		},
-		cell: DepositAction,
 	}),
 ];
