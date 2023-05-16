@@ -19,6 +19,8 @@ import {
 	FilterFn,
 	getFilteredRowModel,
 	ColumnDef,
+	ExpandedState,
+	getExpandedRowModel,
 } from '@tanstack/react-table';
 
 import { rankItem } from '@tanstack/match-sorter-utils';
@@ -50,10 +52,12 @@ export function DataTable<Data extends object>({
 	headerTitle,
 }: DataTableProps<Data>) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
 	const table = useReactTable({
 		columns,
 		data,
+
 		getCoreRowModel: getCoreRowModel(),
 		globalFilterFn: fuzzyFilter,
 		onGlobalFilterChange: setGlobalFilterState,
@@ -66,7 +70,11 @@ export function DataTable<Data extends object>({
 		state: {
 			sorting,
 			globalFilter,
+			expanded,
 		},
+		getExpandedRowModel: getExpandedRowModel(),
+		onExpandedChange: setExpanded,
+		getSubRows: (originalRow) => originalRow,
 	});
 
 	return (

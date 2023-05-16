@@ -31,7 +31,7 @@ function Dashboard() {
 		<>
 			<AccountManagmentModal isOpen={isOpen} onClose={onClose} />
 			<div className='w-full'>
-				<div className='w-full max-w-screen-xl mx-auto'>
+				<div className='w-full max-w-screen-xl px-4 mx-auto'>
 					<div className='flex'>
 						<Tabs
 							variant='soft-rounded'

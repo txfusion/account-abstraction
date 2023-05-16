@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDisclosure } from '@chakra-ui/react';
 import { createColumnHelper } from '@tanstack/react-table';
-import DepositModal from '../modals/DepositModal';
 import { useContractRead } from 'wagmi';
 import { ethers } from 'ethers';
 import { smartAccount } from '@/redux/account.slice';
@@ -12,13 +11,14 @@ import { Contract } from 'zksync-web3';
 import { address } from '@/libs/address';
 import { abi } from '@/web3/services/abi';
 import { PurpleButton } from '@/components/buttons/PurpleButton';
+import WithdrawModal from '../modals/WithdrawModal';
 
 const WithdrawAction = ({ row }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	return (
 		<>
-			<DepositModal data={row.original} isOpen={isOpen} onClose={onClose} />
+			<WithdrawModal data={row.original} isOpen={isOpen} onClose={onClose} />
 			<PurpleButton text={'Withdraw'} onClick={onOpen} />
 		</>
 	);
@@ -115,6 +115,35 @@ const HarvestAllAction = ({ table }: any) => {
 	);
 };
 
+const StakedAmount = ({ row }: any) => {
+	const { accountAddress } = useSelector(smartAccount);
+
+	const [stakedAmount, setStakedAmount] = useState<string>('');
+
+	const { data: contractData } = useContractRead({
+		address: address.masterchef as `0x${string}`,
+		abi: abi.masterchef,
+		functionName: 'userInfo',
+		args: [row.original.poolId, accountAddress],
+		watch: true,
+	});
+
+	useEffect(() => {
+		if (contractData) {
+			console.log(contractData);
+			const rewards = ethers.utils.formatEther(
+				contractData.amount as ethers.BigNumberish
+			);
+			setStakedAmount((+rewards).toFixed(2));
+		}
+	}, [contractData, accountAddress]);
+
+	if (stakedAmount) {
+		return <p>~ {(+stakedAmount).toFixed(2)}</p>;
+	}
+	return <p>-</p>;
+};
+
 const RewardBalance = ({ row }: any) => {
 	const [reward, setReward] = useState<string>('');
 	const { accountAddress } = useSelector(smartAccount);
@@ -164,6 +193,10 @@ export const withdrawColumns = [
 		header: 'Reward',
 		id: 'Reward',
 		cell: RewardBalance,
+	}),
+	columnHelper.display({
+		header: 'Staked',
+		cell: StakedAmount,
 	}),
 	columnHelper.display({
 		header: 'Reward Token',

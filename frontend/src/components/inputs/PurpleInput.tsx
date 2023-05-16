@@ -14,9 +14,6 @@ type Props = {
 	placeHolder: string;
 	setValue: any;
 	value?: any;
-	w?: string;
-	h?: string;
-	m?: string;
 	size?: string;
 	iconRight?: JSX.Element;
 	iconLeft?: JSX.Element;
