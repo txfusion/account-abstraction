@@ -22,7 +22,9 @@ type Props = {
 	iconLeft?: JSX.Element;
 };
 
-type PurpleButtonProps = Props & React.ComponentPropsWithoutRef<typeof Box>;
+type PurpleButtonProps = Props &
+	React.ComponentPropsWithoutRef<typeof Box> &
+	React.ComponentPropsWithoutRef<typeof Input>;
 
 export function PurpleInput({
 	text,
@@ -35,6 +37,7 @@ export function PurpleInput({
 	iconRight,
 	iconLeft,
 	value,
+	type,
 }: PurpleButtonProps) {
 	return (
 		<>
@@ -47,6 +50,7 @@ export function PurpleInput({
 				<InputGroup size={size}>
 					{iconLeft ? <InputLeftElement children={iconLeft} /> : null}
 					<Input
+						type={type}
 						border='0.06rem'
 						backgroundColor='system-gray.100'
 						borderStyle='solid'

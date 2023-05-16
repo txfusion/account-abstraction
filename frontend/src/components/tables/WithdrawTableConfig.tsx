@@ -151,7 +151,7 @@ export const withdrawColumns = [
 			return <Icon />;
 		},
 	}),
-	columnHelper.accessor('lpTokenName', {
+	columnHelper.display({
 		header: 'LP Token',
 		cell: ({ row }) => (
 			<div className='flex flex-col gap-1 '>
@@ -165,7 +165,7 @@ export const withdrawColumns = [
 		id: 'Reward',
 		cell: RewardBalance,
 	}),
-	columnHelper.accessor('lpTokenName', {
+	columnHelper.display({
 		header: 'Reward Token',
 		cell: ({ row }) => (
 			<div className='flex flex-col gap-1'>

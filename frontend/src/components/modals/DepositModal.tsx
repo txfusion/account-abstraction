@@ -95,7 +95,9 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 
 	const Icon = data.lpTokenIcon;
 
-	const balanceError = tokenBalance ? +((+tokenBalance.formatted).toFixed(2)) - amount <= 0 : true;
+	const balanceError = tokenBalance
+		? +(+tokenBalance.formatted).toFixed(2) - amount <= 0
+		: true;
 	const amountError = isNaN(amount) || amount < 0;
 
 	return (
@@ -109,6 +111,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 							</NumberInput>
 						</FormControl> */}
 						<PurpleInput
+							type='number'
 							size='lg'
 							iconLeft={<div>{Icon && <Icon />}</div>}
 							iconRight={
@@ -121,9 +124,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 							text={'Amount'}
 						/>
 						{balanceError && (
-							<FormErrorMessage>
-								Invalid balance.
-							</FormErrorMessage>
+							<FormErrorMessage>Invalid balance.</FormErrorMessage>
 						)}
 						{amountError && (
 							<FormErrorMessage>
