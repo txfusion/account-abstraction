@@ -6,6 +6,8 @@ type Props = {
 	closeClick?: any;
 	attributes?: any;
 	isLoading?: boolean;
+	isDisabled?: boolean;
+
 };
 
 export function PurpleButton({
@@ -14,9 +16,11 @@ export function PurpleButton({
 	text,
 	attributes,
 	isLoading,
+	isDisabled
 }: Props) {
 	return (
 		<Button
+			isDisabled={isDisabled}
 			isLoading={isLoading}
 			colorScheme='system-purple'
 			onClick={() => {

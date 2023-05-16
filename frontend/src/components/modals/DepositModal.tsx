@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Flex, ModalBody, FormControl, Text } from '@chakra-ui/react';
+import { Flex, ModalBody, FormControl, Text, FormHelperText, FormErrorMessage } from '@chakra-ui/react';
 import { PurpleInput } from '../inputs/PurpleInput';
 import { PurpleButton } from '../buttons/PurpleButton';
 import GrayModal from './GrayModal';
@@ -88,11 +88,13 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 
 	const Icon = data.lpTokenIcon;
 
+	const haveError = tokenBalance ? tokenBalance.value.toNumber() - amount <= 0 : true;
+
 	return (
 		<>
 			<GrayModal isOpen={isOpen} onClose={onClose} header={'Deposit'}>
 				<ModalBody pb={6}>
-					<FormControl>
+					<FormControl isInvalid={haveError}>
 						{/* <FormControl>
 							<NumberInput max={50} min={10}>
 								<NumberInputField />
@@ -110,6 +112,11 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 							setValue={setAmount}
 							text={'Amount'}
 						/>
+						{haveError && (
+							<FormErrorMessage>
+								Invalid balance.
+							</FormErrorMessage>
+						)}
 						<p className='text-red-400/50'>
 							All transaction costs will be paid in USDC
 						</p>
@@ -124,6 +131,7 @@ export default function DepositModal({ isOpen, onClose, data }: IDepositModal) {
 						)}
 						<Flex alignItems='center' mt={2}>
 							<PurpleButton
+								isDisabled={haveError}
 								onClick={createTransaction}
 								closeClick={onClose}
 								text={'Add to pending transactions'}
