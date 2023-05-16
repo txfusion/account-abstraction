@@ -20,14 +20,14 @@ export const NavBar = () => {
 
 	return (
 		<>
-			<Box bg='system-purple.500' px={4}>
+			<Box
+				// bg='system-purple.500'
+				px={4}>
 				<Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
 					<HStack spacing={8} alignItems={'center'}>
 						<Link
 							fontSize='xl'
-							textColor={`${
-								router.pathname == '/' ? 'white' : 'black'
-							}`}
+							textColor={`${router.pathname == '/' ? 'white' : 'black'}`}
 							fontWeight='bold'
 							href='/'
 							_hover={{
