@@ -25,20 +25,9 @@ const AccountBalance = ({ getValue, row, column, table }: any) => {
 		watch: true,
 	});
 	if (tokenBalance?.formatted) {
-		return <p>~{(+tokenBalance?.formatted).toFixed(2)}</p>;
+		return <p>~ {(+tokenBalance?.formatted).toFixed(2)}</p>;
 	}
 	return <p>-</p>;
-};
-
-const MergePictureWithName = ({ getValue, row, column, table }: any) => {
-	return (
-		<HStack spacing={5}>
-			<Box borderColor='system-purple.500' border='0.2rem'>
-				<Image boxSize='50px' src={row.original.logoURI} alt='Image' />
-			</Box>
-			<Box>{getValue()}</Box>
-		</HStack>
-	);
 };
 
 const columnHelper = createColumnHelper<any>();
@@ -52,14 +41,27 @@ export const depositColumns = [
 		},
 	}),
 	columnHelper.accessor('lpTokenName', {
-		header: 'Name',
+		header: 'LP Token',
+		cell: ({ row }) => (
+			<div className='flex flex-col gap-1 '>
+				<p>{row.original.lpTokenName}</p>
+				<p className='text-white/50'>{row.original.lpTokenSymbol}</p>
+			</div>
+		),
 	}),
-	columnHelper.accessor('lpTokenSymbol', {
-		header: 'Symbol',
-	}),
+
 	columnHelper.accessor('', {
 		header: 'Balance',
 		cell: AccountBalance,
+	}),
+	columnHelper.accessor('lpTokenName', {
+		header: 'Reward Token',
+		cell: ({ row }) => (
+			<div className='flex flex-col gap-1'>
+				<p>{row.original.rewardTokenName}</p>
+				<p className='text-white/50'>{row.original.rewardTokenSymbol}</p>
+			</div>
+		),
 	}),
 	columnHelper.display({
 		id: 'deposit',

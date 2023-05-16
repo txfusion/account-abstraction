@@ -1,20 +1,17 @@
-import { createColumnHelper } from '@tanstack/react-table';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useDisclosure } from '@chakra-ui/react';
-import { PurpleButton } from '@/components/buttons/PurpleButton';
+import { createColumnHelper } from '@tanstack/react-table';
 import DepositModal from '../modals/DepositModal';
 import { useContractRead } from 'wagmi';
+import { ethers } from 'ethers';
+import { smartAccount } from '@/redux/account.slice';
+import { getSigner } from '@/web3/services/getSigner';
+import { batchTransactionsAdded } from '@/redux/transactions.slice';
+import { Contract } from 'zksync-web3';
 import { address } from '@/libs/address';
 import { abi } from '@/web3/services/abi';
-import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
-import { smartAccount } from '@/redux/account.slice';
-import { useDispatch, useSelector } from 'react-redux';
-import { getSigner } from '@/web3/services/getSigner';
-import { Contract } from 'zksync-web3';
-import {
-	TransactionType,
-	batchTransactionsAdded,
-} from '@/redux/transactions.slice';
+import { PurpleButton } from '@/components/buttons/PurpleButton';
 
 const WithdrawAction = ({ row }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -138,7 +135,7 @@ const RewardBalance = ({ row }: any) => {
 	}, [data, accountAddress]);
 
 	if (reward) {
-		return <p>~{reward}</p>;
+		return <p>~ {reward}</p>;
 	}
 
 	return <p>-</p>;
@@ -155,15 +152,27 @@ export const withdrawColumns = [
 		},
 	}),
 	columnHelper.accessor('lpTokenName', {
-		header: 'Name',
-	}),
-	columnHelper.accessor('lpTokenSymbol', {
-		header: 'Symbol',
+		header: 'LP Token',
+		cell: ({ row }) => (
+			<div className='flex flex-col gap-1 '>
+				<p>{row.original.lpTokenName}</p>
+				<p className='text-white/50'>{row.original.lpTokenSymbol}</p>
+			</div>
+		),
 	}),
 	columnHelper.display({
 		header: 'Reward',
 		id: 'Reward',
 		cell: RewardBalance,
+	}),
+	columnHelper.accessor('lpTokenName', {
+		header: 'Reward Token',
+		cell: ({ row }) => (
+			<div className='flex flex-col gap-1'>
+				<p>{row.original.rewardTokenName}</p>
+				<p className='text-white/50'>{row.original.rewardTokenSymbol}</p>
+			</div>
+		),
 	}),
 	columnHelper.display({
 		id: 'withdraw',

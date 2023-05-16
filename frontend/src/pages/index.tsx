@@ -18,37 +18,14 @@ import AccountManagmentModal from '@/components/modals/AccountManagmentModal';
 import { DataTable } from '@/components/tables/DataTable';
 import { withdrawColumns } from '@/components/tables/WithdrawTableConfig';
 import { masterChefDetails } from '@/components/masterChef';
-import { address } from '@/libs/address';
 import { useSelector } from 'react-redux';
 import { smartAccount } from '@/redux/account.slice';
-import { useBalance } from 'wagmi';
 
 function Dashboard() {
-	const { connected, accountAddress } = useSelector(smartAccount);
+	const { connected } = useSelector(smartAccount);
 
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [globalFilter, setGlobalFilterState] = useState('');
-
-	const [data, setData] = useState(null);
-	const [isLoading, setLoading] = useState(false);
-
-	const { data: tokenBalance } = useBalance({
-		address: accountAddress as `0x${string}`,
-		token: address.usdc as `0x${string}`,
-		watch: true,
-	});
-	useEffect(() => {
-		setLoading(true);
-		fetch('/api/pools/all')
-			.then((res) => res.json())
-			.then((data) => {
-				setData(data);
-				setLoading(false);
-			});
-	}, []);
-
-	if (isLoading) return <p>Loading...</p>;
-	if (!data) return <p>No profile data</p>;
 
 	return (
 		<>
@@ -56,17 +33,32 @@ function Dashboard() {
 			<div className='w-full'>
 				<div className='w-full max-w-screen-lg mx-auto'>
 					<div className='flex'>
-						<Tabs variant='unstyled' colorScheme='black ' className='w-full'>
+						<Tabs
+							variant='soft-rounded'
+							colorScheme='green '
+							className='w-full'>
 							<TabList>
-								<Tab textColor='system-purple.500'>Deposit</Tab>
-								<Tab textColor='system-purple.500'>Withdraw</Tab>
+								<Tab
+									textColor='white'
+									_selected={{
+										bg: 'system-purple.500',
+									}}>
+									Deposit
+								</Tab>
+								<Tab
+									textColor='white'
+									_selected={{
+										bg: 'system-purple.500',
+									}}>
+									Withdraw
+								</Tab>
 							</TabList>
-							<TabIndicator
+							{/* <TabIndicator
 								mt='-5.5px'
 								height='2px'
 								bg='system-purple.500'
 								borderRadius='1px'
-							/>
+							/> */}
 							<div className='flex flex-row gap-4 mt-4'>
 								<TabPanels>
 									<TabPanel p={0}>
