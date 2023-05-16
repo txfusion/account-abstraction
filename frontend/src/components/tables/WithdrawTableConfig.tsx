@@ -7,6 +7,10 @@ import { useBalance, useContractRead } from 'wagmi';
 import { address } from '@/libs/address';
 import { abi } from '@/web3/services/abi';
 import { ethers } from 'ethers';
+import { useEffect, useState } from 'react';
+import { getReward } from '@/web3/services/getReward';
+import { smartAccount } from '@/redux/account.slice';
+import { useSelector } from 'react-redux';
 
 const DepositAction = ({ getValue, row, column, table }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,18 +35,29 @@ const MergePictureWithName = ({ getValue, row, column, table }: any) => {
 };
 
 const RewardBalance = ({ getValue, row, column, table }: any) => {
+	const [reward, setReward] = useState<string>('');
+	const { accountAddress } = useSelector(smartAccount);
+
 	const { data } = useContractRead({
 		address: address.masterchef as `0x${string}`,
 		abi: abi.masterchef,
 		functionName: 'pendingRewardToken',
-		args: [row.original.p, address.account],
+		args: [row.original.poolId, accountAddress],
+		watch: true,
 	});
 
-	const rewards = ethers.utils.formatEther(data as ethers.BigNumberish);
+	useEffect(() => {
+		if (data) {
+			const rewards = ethers.utils.formatEther(data as ethers.BigNumberish);
+			setReward(rewards);
+		}
+	}, [data, accountAddress]);
 
-	// console.log(ethers.utils.formatEther(contractRead.data));
+	if (reward) {
+		return <p>{reward}</p>;
+	}
+
 	return <p>-</p>;
-	return <p>{rewards}</p>;
 };
 
 const columnHelper = createColumnHelper<any>();
@@ -61,10 +76,11 @@ export const withdrawColumns = [
 	columnHelper.accessor('lpTokenSymbol', {
 		header: 'Symbol',
 	}),
-	// columnHelper.accessor('', {
-	// 	header: 'Balance',
-	// 	cell: RewardBalance,
-	// }),
+	columnHelper.display({
+		header: 'Reward',
+		id: 'Reward',
+		cell: RewardBalance,
+	}),
 	columnHelper.display({
 		id: 'deposit',
 		cell: DepositAction,

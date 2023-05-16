@@ -9,7 +9,6 @@ const accountSlice = createSlice({
 	initialState: initialState,
 	reducers: {
 		connectSmartAccount: (state, action: PayloadAction<SmartAccountType>) => {
-			console.log(action.payload)
 			state.accountAddress = action.payload.accountAddress;
 			state.connected = true;
 		},
