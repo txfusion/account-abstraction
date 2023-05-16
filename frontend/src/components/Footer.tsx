@@ -57,12 +57,9 @@ export default function Footer() {
 				<Container as={Stack} maxW={'6xl'} py={10}>
 					<SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
 						<Stack align={'flex-start'}>
-							<ListHeader>Company</ListHeader>
+							<ListHeader>Pages</ListHeader>
 							<Link href={'/'} textColor='white'>
-								Home
-							</Link>
-							<Link href={'/dasboard'} textColor='white'>
-								Dashboard
+								Yield Farm
 							</Link>
 						</Stack>
 					</SimpleGrid>

@@ -25,22 +25,11 @@ export const NavBar = () => {
 					<HStack spacing={8} alignItems={'center'}>
 						<Link
 							fontSize='xl'
-							textColor={`${router.pathname == '/' ? 'white' : 'black'}`}
-							fontWeight='bold'
-							href='/'
-							_hover={{
-								textDecoration: 'none',
-								textColor: 'system-gray.900',
-							}}>
-							Home
-						</Link>
-						<Link
-							fontSize='xl'
 							textColor={`${
-								router.pathname == '/dashboard' ? 'white' : 'black'
+								router.pathname == '/' ? 'white' : 'black'
 							}`}
 							fontWeight='bold'
-							href='/dashboard'
+							href='/'
 							_hover={{
 								textDecoration: 'none',
 								textColor: 'system-gray.900',
