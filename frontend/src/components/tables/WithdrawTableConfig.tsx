@@ -2,15 +2,21 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useDisclosure } from '@chakra-ui/react';
 import { PurpleButton } from '@/components/buttons/PurpleButton';
 import DepositModal from '../modals/DepositModal';
-import { useBalance, useContractRead } from 'wagmi';
+import { useContractRead } from 'wagmi';
 import { address } from '@/libs/address';
 import { abi } from '@/web3/services/abi';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { smartAccount } from '@/redux/account.slice';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSigner } from '@/web3/services/getSigner';
+import { Contract } from 'zksync-web3';
+import {
+	TransactionType,
+	batchTransactionsAdded,
+} from '@/redux/transactions.slice';
 
-const DepositAction = ({ getValue, row, column, table }: any) => {
+const WithdrawAction = ({ row }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	return (
@@ -20,32 +26,110 @@ const DepositAction = ({ getValue, row, column, table }: any) => {
 		</>
 	);
 };
-const HarvestAction = ({ getValue, row, column, table }: any) => {
+
+const HarvestAction = ({ row }: any) => {
+	const { accountAddress } = useSelector(smartAccount);
+	const dispatch = useDispatch();
+	const pool = row.original;
+
+	const onHarvest = async () => {
+		if (!accountAddress) {
+			console.log('Smart Account Address not found');
+			return;
+		}
+		const masterChef = new Contract(
+			address.masterchef,
+			abi.masterchef,
+			await getSigner()
+		);
+
+		const txCallData = await masterChef.populateTransaction.withdraw(
+			pool.poolId,
+			0
+		);
+
+		dispatch(
+			batchTransactionsAdded([
+				{
+					fromAddress: accountAddress as string,
+					toAddress: address.masterchef,
+					toName: pool.yieldFarmName,
+					tokenAmount: 0,
+					txCalldata: txCallData,
+					value: 0,
+					functionName: 'WITHDRAW',
+				},
+			])
+		);
+	};
+
+	return <PurpleButton text={'Harvest'} onClick={onHarvest} />;
+};
+
+const HarvestAllAction = ({ table }: any) => {
+	const pools = table.options.data;
+	const dispatch = useDispatch();
+	const { accountAddress } = useSelector(smartAccount);
+
+	const createTransaction = async () => {
+		if (pools.length === 0) {
+			console.log('No pools');
+			return;
+		}
+		if (!accountAddress) {
+			console.log('Smart Account Address not found');
+			return;
+		}
+
+		const masterChef = new Contract(
+			address.masterchef,
+			abi.masterchef,
+			await getSigner()
+		);
+
+		const txs = pools.map(async (pool: any) => {
+			const callData = await masterChef.populateTransaction.withdraw(
+				pool.poolId,
+				0
+			);
+
+			return {
+				fromAddress: accountAddress as string,
+				toAddress: address.masterchef,
+				toName: pool.yieldFarmName,
+				tokenAmount: 0,
+				txCalldata: callData,
+				value: 0,
+				functionName: 'WITHDRAW',
+			};
+		});
+
+		Promise.all(txs).then((txsResolved: any) =>
+			dispatch(batchTransactionsAdded([...txsResolved]))
+		);
+	};
+
 	return (
-		<>
-			<PurpleButton text={'Harvest'} />
-		</>
+		<button
+			onClick={createTransaction}
+			className='w-full text-center border border-white/30 px-1 py-1 rounded-lg hover:bg-white/5 animate-all duration-150'>
+			Harvest All
+		</button>
 	);
 };
 
-const RewardBalance = ({ getValue, row, column, table }: any) => {
+const RewardBalance = ({ row }: any) => {
 	const [reward, setReward] = useState<string>('');
 	const { accountAddress } = useSelector(smartAccount);
 
-	const { data, refetch } = useContractRead({
+	const { data } = useContractRead({
 		address: address.masterchef as `0x${string}`,
 		abi: abi.masterchef,
 		functionName: 'pendingRewardToken',
 		args: [row.original.poolId, accountAddress],
 		watch: true,
-		enabled: false,
 	});
 
-	useEffect(() => {
-		if (accountAddress) {
-			refetch();
-		}
-	}, [accountAddress]);
 	useEffect(() => {
 		if (data) {
 			const rewards = ethers.utils.formatEther(data as ethers.BigNumberish);
@@ -83,18 +167,11 @@ export const withdrawColumns = [
 	}),
 	columnHelper.display({
 		id: 'withdraw',
-
-		cell: DepositAction,
+		cell: WithdrawAction,
 	}),
 	columnHelper.display({
 		id: 'harvest',
-		header: () => {
-			return (
-				<button className='w-full text-center border border-white/30 px-1 py-1 rounded-lg hover:bg-white/5 animate-all duration-150'>
-					Harvest All
-				</button>
-			);
-		},
+		header: HarvestAllAction,
 		cell: HarvestAction,
 	}),
 ];

@@ -2,10 +2,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Box, HStack, Image, useDisclosure } from '@chakra-ui/react';
 import { PurpleButton } from '@/components/buttons/PurpleButton';
 import DepositModal from '../modals/DepositModal';
-import { useBalance, useContractRead } from 'wagmi';
-import { address } from '@/libs/address';
-import { abi } from '@/web3/services/abi';
-import { ethers } from 'ethers';
+import { useBalance } from 'wagmi';
 import { smartAccount } from '@/redux/account.slice';
 import { useSelector } from 'react-redux';
 
@@ -27,8 +24,10 @@ const AccountBalance = ({ getValue, row, column, table }: any) => {
 		token: row.original.lpToken as `0x${string}`,
 		watch: true,
 	});
-
-	return <p>{tokenBalance?.formatted}</p>;
+	if (tokenBalance?.formatted) {
+		return <p>~{(+tokenBalance?.formatted).toFixed(2)}</p>;
+	}
+	return <p>-</p>;
 };
 
 const MergePictureWithName = ({ getValue, row, column, table }: any) => {
