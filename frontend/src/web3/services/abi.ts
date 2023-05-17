@@ -14,6 +14,7 @@ export const abi = {
 		require('../artifacts-zk/contracts/multicall/Paymaster.sol/Paymaster.json')
 			.abi,
 };
+
 export const artifacts = {
 	erc20: require('../artifacts-zk/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'),
 	masterchef: require('../artifacts-zk/contracts/yieldFarming/MasterChef.sol/MasterChef.json'),

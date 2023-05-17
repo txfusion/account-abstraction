@@ -16,16 +16,22 @@ export default function AccountManagmentModal({ isOpen, onClose }: Props) {
 	const [addressValue, setAddressValue] = useState(' ');
 	const smartAcc = useSelector(smartAccount);
 
-	let { address } = useAccount();
+	const { address } = useAccount();
 	const dispatch = useDispatch();
 
 	const [loadingCreate, setLoadingCreate] = useState<boolean>(false);
 	const [loadingConnect, setLoadingConnect] = useState<boolean>(false);
 
 	const createAccount = async () => {
+		if (!address) {
+			console.log(
+				'Please connect with you wallet before creating smart account'
+			);
+			return;
+		}
 		setLoadingCreate(true);
 		try {
-			let smartAccountAddress = await deployAccount(address);
+			const smartAccountAddress = await deployAccount(address);
 			setLoadingCreate(false);
 			dispatch(
 				connectSmartAccount({
