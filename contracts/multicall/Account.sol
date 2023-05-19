@@ -235,7 +235,10 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
         uint256 value = _transaction.value;
         bytes memory data = _transaction.data;
 
-        if (isBatched(_transaction.data, to)) {
+        if (value != 0 && data.length == 0) {
+            // ETH transfer
+            Address.sendValue(payable(to), value);
+        } else if (isBatched(_transaction.data, to)) {
             multicall(_transaction.data[4:]);
         } else {
             Address.functionCallWithValue(to, data, value);

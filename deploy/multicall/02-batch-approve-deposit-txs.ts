@@ -87,13 +87,13 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	console.log('General Flow Paymaster data obtained');
 
-	let tx: types.TransactionRequest = await getEIP712TxRequest(
+	let tx: types.TransactionRequest = await getEIP712TxRequest({
 		provider,
-		address.account,
-		address.account,
-		multiTx,
-		paymasterData
-	);
+		from: address.account,
+		to: address.account,
+		calldata: multiTx,
+		customData: paymasterData,
+	});
 
 	tx = await addSignature(tx, wallet);
 

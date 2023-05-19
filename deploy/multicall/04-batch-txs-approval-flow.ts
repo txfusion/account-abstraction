@@ -52,7 +52,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	console.log('=============================================');
 
 	let transactionList: any[] = [];
-	for (let i = 0; i < 101; i++) {
+	for (let i = 0; i < 10; i++) {
 		transactionList[i] = await erc20Contract.populateTransaction.transfer(
 			address.spender,
 			AMOUNT
@@ -76,13 +76,13 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	console.log('Paymaster data obtained');
 
-	let tx: types.TransactionRequest = await getEIP712TxRequest(
+	let tx: types.TransactionRequest = await getEIP712TxRequest({
 		provider,
-		address.account,
-		address.account,
-		multiTxCalldata,
-		paymasterData
-	);
+		from: address.account,
+		to: address.account,
+		calldata: multiTxCalldata,
+		customData: paymasterData,
+	});
 
 	tx = await addSignature(tx, wallet);
 

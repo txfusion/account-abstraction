@@ -138,31 +138,44 @@ export async function getCustomData(
 	return customData;
 }
 
-export async function getEIP712TxRequest(
-	provider: Provider,
-	_from: string,
-	to: string,
-	calldata: string | undefined,
-	_customData: types.Eip712Meta
-): Promise<types.TransactionRequest> {
+interface IGetEIP712TxRequest {
+	provider: Provider;
+	from: string;
+	to: string;
+	calldata?: string | ethers.utils.BytesLike | undefined;
+	customData?: types.Eip712Meta;
+	value?: ethers.BigNumberish | undefined;
+}
+
+export async function getEIP712TxRequest({
+	provider,
+	from,
+	to,
+	calldata,
+	customData,
+	value = BigNumber.from(0),
+}: IGetEIP712TxRequest): Promise<types.TransactionRequest> {
 	return {
-		from: _from,
+		from: from,
 		to: to,
 		chainId: (await provider.getNetwork()).chainId,
 		maxFeePerGas: await provider.getGasPrice(),
 		//  nonce value should be from the account that is sending the transaction
-		nonce: await provider.getTransactionCount(_from as string),
+		nonce: await provider.getTransactionCount(from as string),
 		maxPriorityFeePerGas: BigNumber.from(0),
 		type: 113,
 		data: calldata as string,
-		customData: _customData,
-		value: BigNumber.from(0),
+		customData: customData,
+		value: value,
 		gasPrice: await provider.getGasPrice(),
 		gasLimit: BigNumber.from(1500000),
 	};
 }
 
-export async function addSignature(tx: any, signer: Wallet): Promise<any> {
+export async function addSignature(
+	tx: types.TransactionRequest,
+	signer: Wallet
+): Promise<any> {
 	const signedTxHash = EIP712Signer.getSignedDigest(tx);
 	const signature = ethers.utils.arrayify(
 		ethers.utils.joinSignature(signer._signingKey().signDigest(signedTxHash))

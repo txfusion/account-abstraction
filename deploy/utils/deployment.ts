@@ -21,7 +21,8 @@ export async function deployContract(
 export async function deployAccount(
 	deployer: Deployer,
 	factoryContractName: string,
-	accountContractName: string
+	accountContractName: string,
+	displayGasUsed: boolean = false
 ): Promise<Contract> {
 	const factoryArtifact = await deployer.loadArtifact(factoryContractName);
 	const accountArtifact = await deployer.loadArtifact(accountContractName);
@@ -34,6 +35,11 @@ export async function deployAccount(
 		[accountArtifact.bytecode]
 	);
 
+	// Deploy Factory gas used
+	if (displayGasUsed) {
+		const gasUsed = (await factory.deployTransaction.wait()).gasUsed.toString();
+		console.log('Gas used to deploy Factory contract', gasUsed);
+	}
 	console.log(
 		`${factoryContractName.toLocaleLowerCase()}: "${factory.address}",`
 	);
@@ -43,6 +49,11 @@ export async function deployAccount(
 		await factory.deployAccount(salt, deployer.zkWallet.address, GAS_LIMIT)
 	).wait();
 
+	// Deploy Account gas used
+	if (displayGasUsed) {
+		const gasUsed = transaction.gasUsed.toString();
+		console.log('Gas used to deploy Account contract', gasUsed);
+	}
 	const accountAddr =
 		utils.getDeployedContracts(transaction)[0].deployedAddress;
 	const accountContract = new Contract(
