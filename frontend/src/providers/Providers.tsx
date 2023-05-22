@@ -12,6 +12,9 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { WagmiConfig, configureChains, createClient, mainnet } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
+import { Provider as ReduxProvider } from 'react-redux';
+import store from '../redux/store';
+import RouterProvider from './RouterProvider';
 
 const { chains, provider } = configureChains([mainnet], [publicProvider()]);
 
@@ -51,7 +54,11 @@ const Providers = ({ children }: IProvider) => {
 				avatar={CustomAvatar}
 				modalSize='compact'
 				coolMode={true}>
-				{children}
+				<ReduxProvider store={store}>
+					<RouterProvider>
+						{children}
+					</RouterProvider>
+				</ReduxProvider>
 			</RainbowKitProvider>
 		</WagmiConfig>
 	);

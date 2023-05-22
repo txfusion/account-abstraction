@@ -1,24 +1,18 @@
 "use client"
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { CustomWalletButton } from "./CustomWalletButton";
-import { useAccount } from "wagmi";
-
+import Image from 'next/image';
 
 export const ConnectWallet = () => {
-  const { isConnected } = useAccount();
-  const { push } = useRouter();
-
-  useEffect(() => {
-    if (isConnected) {
-      push('/app/account')
-    }
-  }, [isConnected]);
 
   return (
     <>
-      <CustomWalletButton />
+      <div className="flex flex-col items-center justify-center">
+        <Image src="/wallet.png" alt="Wallet" width={412} height={412} />
+        <div className="text-white pb-2 text-2xl">Welcome to ZkSync Swap</div>
+        <div className="text-blue-300 pb-5 text-xs">To get started you'll need to connect your Wallet.</div>
+        <CustomWalletButton />
+      </div>
     </>
   )
 };

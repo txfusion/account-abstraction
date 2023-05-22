@@ -16,7 +16,7 @@ export default function AppLayout({
     return (
         <Providers>
             <div className="grid grid-cols-8 items-center justify-center">
-                <div className="flex min-h-screen col-span-2 items-center justify-center border-r border-gray-200">
+                <div className="flex min-h-screen col-span-2 items-center justify-center border-r-2 border-gray-200 bg-slider-color">
                     <Slider activeStep={params.stepId} />
                 </div>
                 <div className="flex min-h-screen col-span-6 items-center justify-center">
