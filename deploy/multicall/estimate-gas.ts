@@ -8,7 +8,7 @@ import { addSignature, getEIP712TxRequest } from '../utils/multicall';
 
 const MINT_AMOUNT = ethers.utils.parseEther('100');
 const TRANSFER_AMOUNT = ethers.utils.parseEther('0.1');
-const SECONDARY_ACCOUNT = '0xc9968C067288FDFc74FB091bdFBcCe385401Cc39';
+const SECONDARY_ACCOUNT = '0x54fc18B2Dc5D91Add85DA2859710c3Ad6CA15b46';
 
 export default async function (hre: HardhatRuntimeEnvironment) {
 	const provider = new Provider('http://localhost:3050', 270);
@@ -38,12 +38,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	(await erc20.mint(accountContract.address, MINT_AMOUNT)).wait();
 	console.log(`Minted ${MINT_AMOUNT} tokens for the deployed Account`);
 
-	// Target token balance
-	const erc20TargetBalance = await erc20.balanceOf(accountContract.address);
-
+	// Account token balance
+	const erc20AccountBalance = await erc20.balanceOf(accountContract.address);
 	console.log(
-		'Target address token balance before  transaction',
-		ethers.utils.formatEther(erc20TargetBalance)
+		'Account token balance before  transaction',
+		ethers.utils.formatEther(erc20AccountBalance)
 	);
 
 	const transferErc20Tx = await erc20.populateTransaction.transfer(
@@ -77,8 +76,10 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		'Target address token balance before batch transaction',
 		ethers.utils.formatEther(erc20TargetBalanceAfterTxs)
 	);
+
 	const accountBalance = await provider.getBalance(accountContract.address);
 	console.log('BALANCE', ethers.utils.formatEther(accountBalance));
+
 	console.log('=============================================');
 
 	let simpleTransfer: types.TransactionRequest = await getEIP712TxRequest({
@@ -102,5 +103,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		txWaitSimpleTransfer.gasUsed.toString()
 	);
 	const accountBalancePost = await provider.getBalance(accountContract.address);
-	console.log('BALANCE', ethers.utils.formatEther(accountBalancePost));
+	console.log('ACCOUNT BALANCE', ethers.utils.formatEther(accountBalancePost));
+
+	const secondaryAccountBalance = await provider.getBalance(SECONDARY_ACCOUNT);
+	console.log(
+		'TARGET ACCOUNT BALANCE',
+		ethers.utils.formatEther(secondaryAccountBalance)
+	);
 }
