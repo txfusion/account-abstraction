@@ -38,7 +38,7 @@ export const CustomWalletButton = () => {
               }
               if (chain.unsupported) {
                 return (
-                  <button type="button" className="text-white bg-gradient-to-r from-red-300 to-red-600 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-red-100 font-medium rounded-lg text-md px-5 py-2.5 text-center" onClick={openChainModal}>
+                  <button type="button" className="text-white bg-red-400 hover:bg-red-500 focus:ring-4 focus:outline-none focus:ring-red-100 font-medium rounded-lg text-md px-5 py-2.5 text-center" onClick={openChainModal}>
                     Wrong network
                   </button>
                 );

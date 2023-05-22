@@ -10,13 +10,14 @@ import {
 	AvatarComponent,
 	Theme,
 } from '@rainbow-me/rainbowkit';
-import { WagmiConfig, configureChains, createClient, mainnet } from 'wagmi';
+import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { Provider as ReduxProvider } from 'react-redux';
 import store from '../redux/store';
+import defaultChains from '../libs/chains';
 import RouterProvider from './RouterProvider';
 
-const { chains, provider } = configureChains([mainnet], [publicProvider()]);
+const { chains, provider } = configureChains(defaultChains, [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
 	appName: 'Tx Fusion',
