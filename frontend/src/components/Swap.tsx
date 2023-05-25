@@ -12,7 +12,7 @@ export const Swap = () => {
                     <div className="mb-5 max-w rounded-full border-b border-white" />
                     <div className="flex flex-col p-2 m-2 max-w max-h-lg bg-global-color border border-transparent rounded-lg shadow items-center">
                         <div className="flex">
-                            <input className="md:w-7/12 py-2 px-4 text-white bg-global-color leading-tight focus:outline-none focus:border-blue-300" type="text" placeholder="0xA3...B4D3" />
+                            <input className="md:w-7/12 py-2 px-4 text-white bg-global-color leading-tight focus:outline-none focus:border-blue-300" type="text" placeholder="0.00" />
                             <button type="button" className="md:w-5/12 px-5 flex items-center justify-self-center bg-black rounded-full border-2 border-transparent">
                                 <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/ethereum-43-912185.png?f=avif&w=256" alt="ETH" height="20" width="20" className="me-2" />
                                 <div className="text-white">ETH</div>
@@ -35,7 +35,7 @@ export const Swap = () => {
                     </div>
                     <div className="flex flex-col p-2 m-2 max-w max-h-lg bg-global-color border border-transparent rounded-lg shadow bg-global-color items-center mb-6">
                         <div className="flex">
-                            <input className="md:w-7/12 py-2 bg-global-color px-4 text-white leading-tight focus:outline-none focus:border-blue-300" type="text" placeholder="0xA3...B4D3" />
+                            <input className="md:w-7/12 py-2 bg-global-color px-4 text-white leading-tight focus:outline-none focus:border-blue-300" type="text" placeholder="0.00" />
                             <button type="button" className="md:w-5/12 px-5 flex items-center bg-black rounded-full border-2 border-transparent">
                                 <img src="https://cdn.iconscout.com/icon/premium/png-512-thumb/ethereum-43-912185.png?f=avif&w=256" alt="Image" height="20" width="20" className="me-2" />
                                 <div className="text-white">ETH</div>
