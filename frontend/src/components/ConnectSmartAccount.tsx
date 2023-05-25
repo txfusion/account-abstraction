@@ -1,6 +1,20 @@
 "use client"
 
+import { connectSmartAccount, smartAccount } from "@/redux/account.slice";
+import { useDispatch } from "react-redux";
+
 export const ConnectSmartAccount = () => {
+
+    const dispatch = useDispatch();
+
+    const createAccount = async () => {
+        dispatch(
+            connectSmartAccount({
+                connected: true,
+                accountAddress: "0x123456789",
+            })
+        );
+    };
 
     return (
         <>
@@ -19,14 +33,14 @@ export const ConnectSmartAccount = () => {
                         </div>
                     </div>
                     <div className="md:flex justify-center mb-6">
-                        <button className="shadow w-64 bg-blue-300 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" disabled={false}>
+                        <button className="shadow w-64 bg-blue-300 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" disabled={true}>
                             Connect Account
                         </button>
                     </div>
                     <div className="md:flex justify-center mb-6 border-b-2 border-gray-200">
                     </div>
                     <div className="md:flex justify-center mt-6">
-                        <button className="shadow w-64 bg-blue-300 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" disabled={false}>
+                        <button className="shadow w-64 bg-blue-300 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" disabled={false} onClick={() => createAccount()}>
                             Create Account
                         </button>
                     </div>

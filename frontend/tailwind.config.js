@@ -16,6 +16,7 @@ module.exports = {
       },
       colors: {
         'slider-color': '#17191C',
+        'global-color': '#23262d',
       },
     },
   },
