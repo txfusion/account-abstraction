@@ -168,7 +168,7 @@ export async function getEIP712TxRequest({
 		customData: customData,
 		value: value,
 		gasPrice: await provider.getGasPrice(),
-		gasLimit: BigNumber.from(1500000),
+		gasLimit: BigNumber.from(15000000),
 	};
 }
 

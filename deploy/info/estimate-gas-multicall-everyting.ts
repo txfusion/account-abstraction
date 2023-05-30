@@ -8,11 +8,16 @@ import { addSignature, getEIP712TxRequest } from '../utils/multicall';
 
 const MINT_AMOUNT = ethers.utils.parseEther('100');
 const TRANSFER_AMOUNT = ethers.utils.parseEther('0.1');
-const SECONDARY_ACCOUNT = '0x54fc18B2Dc5D91Add85DA2859710c3Ad6CA15b46';
+const TRANSFER_AMOUNT2 = ethers.utils.parseEther('0.01');
+const SECONDARY_ACCOUNT = rich_wallet[1].address;
+// testnet
+// const SECONDARY_ACCOUNT = '0x33A37c6A25E50c41fe987f4986273DfD24C4fff1';
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-	const provider = new Provider('http://localhost:3050', 270);
-	const wallet = new Wallet(rich_wallet[0].privateKey, provider);
+	const provider = new Provider('https://testnet.era.zksync.dev', 280);
+
+	const pk = process.env.ZK_TESTNET_PK as string;
+	const wallet = new Wallet(pk, provider);
 	const deployer = new Deployer(hre, wallet);
 
 	// Deploy ERC20
@@ -30,7 +35,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	await (
 		await deployer.zkWallet.sendTransaction({
 			to: accountContract.address,
-			value: MINT_AMOUNT,
+			value: TRANSFER_AMOUNT,
 		})
 	).wait();
 
@@ -58,6 +63,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 	});
 	tx = await addSignature(tx, wallet);
 
+	provider.getFeeData();
 	const status = await provider.sendTransaction(utils.serialize(tx));
 	const txWait = await status.wait();
 
@@ -87,7 +93,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		from: accountContract.address,
 		to: SECONDARY_ACCOUNT,
 		calldata: '0x',
-		value: TRANSFER_AMOUNT,
+		value: TRANSFER_AMOUNT2,
 	});
 
 	simpleTransfer = await addSignature(simpleTransfer, wallet);

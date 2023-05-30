@@ -3,7 +3,7 @@ import { utils, Contract } from 'zksync-web3';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
 
 export const GAS_LIMIT = {
-	gasLimit: ethers.utils.hexlify(1000000),
+	gasLimit: ethers.utils.hexlify(10000000),
 };
 export async function deployContract(
 	deployer: Deployer,
@@ -12,7 +12,6 @@ export async function deployContract(
 ): Promise<Contract> {
 	const artifact = await deployer.loadArtifact(contractName);
 	const contract = await deployer.deploy(artifact, constructorArguments);
-
 	console.log(`${contractName.toLocaleLowerCase()}: "${contract.address}",`);
 
 	return contract;

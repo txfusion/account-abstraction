@@ -1,12 +1,17 @@
 import * as ethers from 'ethers';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { Provider } from 'zksync-web3';
 
-export default async function (hre: HardhatRuntimeEnvironment) {
-	const provider = new Provider('http://localhost:3050', 270);
-	const gasPrice = await provider.getGasPrice();
+const MAINNET_RPC = 'https://mainnet.era.zksync.io';
+const TESTNET_RPC = 'https://mainnet.era.zksync.io';
+const LOCAL_RPC = 'https://mainnet.era.zksync.io';
 
-	console.log('Gas price:', ethers.utils.formatEther(gasPrice));
+export default async function () {
+	const provider = new Provider(MAINNET_RPC, 324);
+	const gasFeed = await provider.getFeeData();
+
+	for (let [key, value] of Object.entries(gasFeed)) {
+		console.log(`${key}: ${ethers.utils.formatUnits(value, 'gwei')}`);
+	}
 }
 
 // local  0.00000000025
