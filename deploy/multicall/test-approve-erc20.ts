@@ -1,16 +1,16 @@
 import { Provider, utils, Wallet, Contract, types } from 'zksync-web3';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
-import { rich_wallet } from '../utils/rich_wallet';
 import { address } from '../utils/address';
 import { ethers } from 'ethers';
 import { addSignature, getEIP712TxRequest } from '../utils/multicall';
+import { ACCOUNT_OWNER_PRIVATE_KEY } from '../utils/constants';
 
 const AMOUNT = ethers.utils.parseEther('10');
 
 export default async function (hre: HardhatRuntimeEnvironment) {
 	const provider = new Provider('http://localhost:3050', 270);
-	const wallet = new Wallet(rich_wallet[0].privateKey, provider);
+	const wallet = new Wallet(ACCOUNT_OWNER_PRIVATE_KEY, provider);
 	const deployer = new Deployer(hre, wallet);
 
 	// ERC20 Token
@@ -46,15 +46,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 		'Create 1. TX - Approve for (the) Spender to spend certain amount of tokens on the behalf of account'
 	);
 
-	let tx: types.TransactionRequest = await getEIP712TxRequest(
+	const tx = await getEIP712TxRequest(
 		provider,
 		address.account,
 		address.account,
+		undefined,
 		transferTX.data,
 		paymasterD
 	);
 
-	tx = await addSignature(tx, wallet);
+	await addSignature(tx, wallet);
 
 	const response = await (
 		await provider.sendTransaction(utils.serialize(tx))

@@ -2,7 +2,6 @@ import * as ethers from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { utils, Wallet, Contract, types, Provider } from 'zksync-web3';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
-import { rich_wallet } from '../utils/rich_wallet';
 import { address } from '../utils/address';
 import {
 	BATCH_SELECTOR,
@@ -11,13 +10,14 @@ import {
 	getApprovalBasedPaymasterData,
 	getEIP712TxRequest,
 } from '../utils/multicall';
+import { ACCOUNT_OWNER_PRIVATE_KEY } from '../utils/constants';
 
 const MINT_AMOUNT = ethers.utils.parseEther('100');
 const STAKE_AMOUNT = ethers.utils.parseEther('80');
 
 export default async function (hre: HardhatRuntimeEnvironment) {
 	const provider = new Provider('http://localhost:3050', 270);
-	const wallet = new Wallet(rich_wallet[0].privateKey, provider);
+	const wallet = new Wallet(ACCOUNT_OWNER_PRIVATE_KEY, provider);
 	const deployer = new Deployer(hre, wallet);
 
 	// Smart Account
@@ -106,15 +106,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
 	console.log('Paymaster data obtained');
 
-	let tx: types.TransactionRequest = await getEIP712TxRequest(
+	const tx = await getEIP712TxRequest(
 		provider,
 		address.account,
 		address.account,
+		undefined,
 		multiTxCalldata,
 		paymasterData
 	);
 
-	tx = await addSignature(tx, wallet);
+	await addSignature(tx, wallet);
 
 	const status = await provider.sendTransaction(utils.serialize(tx));
 	const txWait = await status.wait();

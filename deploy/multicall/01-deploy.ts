@@ -2,13 +2,13 @@ import * as ethers from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import {  Wallet } from 'zksync-web3';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
-import { rich_wallet } from '../utils/rich_wallet';
 import { deployAccount, deployContract } from '../utils/deployment';
+import { ACCOUNT_OWNER_PRIVATE_KEY } from '../utils/constants';
 
 const MINT_AMOUNT = ethers.utils.parseEther('1000');
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-	const wallet = new Wallet(rich_wallet[0].privateKey);
+	const wallet = new Wallet(ACCOUNT_OWNER_PRIVATE_KEY);
 	const deployer = new Deployer(hre, wallet);
 
 	const erc20 = await deployContract(deployer, 'MyERC20', [18]);

@@ -10,14 +10,14 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/openzeppelin/utils/Addr
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "./Multicall.sol";
 
-contract Account is IAccount, IERC165, IERC1271, Multicall {
+import "./Multicall.sol";
+import "../session/Session.sol";
+
+contract Account is IAccount, IERC165, IERC1271, Multicall, Session {
     using TransactionHelper for Transaction;
 
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
-
-    address public owner;
 
     /**
      * @dev Simulate the behavior of the EOA if the caller is not the bootloader.
@@ -57,7 +57,7 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
 
     /// @param _owner: single signer of this account contract
     constructor(address _owner) {
-        owner = _owner;
+        _transferOwnership(_owner);
     }
 
     // ---------------------------------- //
@@ -95,7 +95,7 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
     function _validateTransaction(
         bytes32 _suggestedSignedHash,
         Transaction calldata _transaction
-    ) internal returns (bytes4 magic) {
+    ) internal returns (bytes4) {
         SystemContractsCaller.systemCallWithPropagatedRevert(
             uint32(gasleft()),
             address(NONCE_HOLDER_SYSTEM_CONTRACT),
@@ -117,12 +117,24 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
             "Not enough balance for fee + value"
         );
 
+        // Check if the transaction is correctly signed by the owner
         if (
             isValidSignature(txHash, _transaction.signature) ==
             EIP1271_SUCCESS_RETURN_VALUE
         ) {
-            magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
+            return ACCOUNT_VALIDATION_SUCCESS_MAGIC;
         }
+
+        // Check if there is an active session for the signer
+        bytes memory signature = extractECDSASignature(_transaction.signature);
+        address signer = ECDSA.recover(txHash, signature);
+        if (
+            isActiveSession(signer, address(uint160(_transaction.to)), _transaction.data)
+        ) {
+            return ACCOUNT_VALIDATION_SUCCESS_MAGIC;
+        }
+
+        return bytes4(0);
     }
 
     /// @dev Should return whether the signature provided is valid for the provided data
@@ -151,9 +163,9 @@ contract Account is IAccount, IERC165, IERC1271, Multicall {
             magic = bytes4(0);
         }
 
-        address recoveredAddr = ECDSA.recover(_hash, signature);
+        address signer = ECDSA.recover(_hash, signature);
 
-        if (recoveredAddr != owner) {
+        if (signer != owner()) {
             magic = bytes4(0);
         }
     }

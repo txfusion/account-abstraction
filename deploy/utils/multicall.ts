@@ -140,29 +140,30 @@ export async function getCustomData(
 
 export async function getEIP712TxRequest(
 	provider: Provider,
-	_from: string,
+	from: string,
 	to: string,
+	value: BigNumber | undefined,
 	calldata: string | undefined,
-	_customData: types.Eip712Meta
+	customData: types.Eip712Meta
 ): Promise<types.TransactionRequest> {
 	return {
-		from: _from,
-		to: to,
+		from,
+		to,
 		chainId: (await provider.getNetwork()).chainId,
 		maxFeePerGas: await provider.getGasPrice(),
 		//  nonce value should be from the account that is sending the transaction
-		nonce: await provider.getTransactionCount(_from as string),
+		nonce: await provider.getTransactionCount(from as string),
 		maxPriorityFeePerGas: BigNumber.from(0),
 		type: 113,
 		data: calldata as string,
-		customData: _customData,
-		value: BigNumber.from(0),
+		customData,
+		value: value ? value : BigNumber.from(0),
 		gasPrice: await provider.getGasPrice(),
 		gasLimit: BigNumber.from(1500000),
 	};
 }
 
-export async function addSignature(tx: any, signer: Wallet): Promise<any> {
+export async function addSignature(tx: types.TransactionRequest, signer: Wallet) {
 	const signedTxHash = EIP712Signer.getSignedDigest(tx);
 	const signature = ethers.utils.arrayify(
 		ethers.utils.joinSignature(signer._signingKey().signDigest(signedTxHash))
@@ -172,5 +173,4 @@ export async function addSignature(tx: any, signer: Wallet): Promise<any> {
 		...tx.customData,
 		customSignature: signature,
 	};
-	return tx;
 }
