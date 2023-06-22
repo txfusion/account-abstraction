@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+main {
+  margin-top: 2%;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  margin-top: 2%;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 10%;
+}
