@@ -2,3 +2,4 @@
 .env
 /artifacts-zk
 /cache-zk
+typechain
